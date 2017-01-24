@@ -15,7 +15,7 @@ $ sudo apt-get install tesseract-ocr
 
 The captcha I was playing with is in gif format.
 
-![](https://github.com/wang-ye/code/blob/master/blog/image/captcha.gif)
+![]({{ site.url }}/assets/captcha.gif)
 
 To decaptcha, I first ran the tesseract command to take the gif as input and output to terminal:
 
