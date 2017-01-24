@@ -46,7 +46,7 @@ Ubuntu provides a *convert* tool for the format converion.
 $ convert captcha.gif captcha.jpg 
 ```
 
-It generated the captcha in [jpg format](https://github.com/wang-ye/code/blob/master/blog/image/captcha.jpg). We can finally do the OCR now!
+It generated the captcha in [jpg format]({{ site.url }}/assets/captcha.jpg). We can finally do the OCR now!
 
 ## The Real Meat
 Run tesseract with single line PSM mode, we get
@@ -56,12 +56,12 @@ $ tesseract captcha.jpg stdout -psm 7
 \W9
 ```
 
-However, the original captcha said the characters are 'YDT9'! It is not working as expected. To understand why, I segmented each letter using GIMP and call tesseract with the character mode. For the first [character Y](https://github.com/wang-ye/code/blob/master/blog/image/y_rotated.jpg), running
+However, the original captcha said the characters are 'YDT9'! It is not working as expected. To understand why, I segmented each letter using GIMP and call tesseract with the character mode. For the first [character Y]({{ site.url }}/assets/y_rotated.jpg), running
 ```shell
 $ tesseract y_rotated.jpg stdout -psm 10
 W
 ```
-If we [rotated the character](https://github.com/wang-ye/code/blob/master/blog/image/y_normal.jpg) with gimp, and run the above command again, it would produce 'Y'.
+If we [rotated the character]({{ site.url }}/assets/y_normal.jpg) with gimp, and run the above command again, it would produce 'Y'.
 
 ```shell
 $ tesseract y_normal.jpg stdout -psm 10
