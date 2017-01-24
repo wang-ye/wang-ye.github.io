@@ -13,6 +13,7 @@ The captcha I was playing with is in gif format.
 ![](https://github.com/wang-ye/code/blob/master/blog/image/captcha.gif)
 
 To decaptcha, I first ran the tesseract command to take the gif as input and output to terminal:
+
 ```shell
 $ tesseract captcha.gif stdout
 Warning in pixReadMemGif: writing to a temp file, not directly to memory
@@ -25,6 +26,7 @@ Error during processing.
 ```
 
 What! To understand why, let's check the tesseract version:
+
 ```shell
 $ tesseract -v
 tesseract 3.04.01
@@ -34,13 +36,16 @@ tesseract 3.04.01
 
 Turned out that leptonica-1.73, the image processing lib, was incompatible with libgif 5.1.2. You may want to try a different version of the libaries, but a quick and dirty way was to convert the image to some other types, such as png or jpg, so that the code would no longer use libgif library.
 Ubuntu provides a *convert* tool for the format converion.
+
 ```shell
 $ convert captcha.gif captcha.jpg 
 ```
+
 It generated the captcha in [jpg format](https://github.com/wang-ye/code/blob/master/blog/image/captcha.jpg). We can finally do the OCR now!
 
 ## The Real Meat
 Run tesseract with single line PSM mode, we get
+
 ```
 $ tesseract captcha.jpg stdout -psm 7
 \W9
@@ -57,6 +62,7 @@ If we [rotated the character](https://github.com/wang-ye/code/blob/master/blog/i
 $ tesseract y_normal.jpg stdout -psm 10
 Y
 ```
+
 Turned out the rotation actually affected the detection accuracy a lot.
 This is also confirmed by the following doc, which says [under rotation](https://github.com/tesseract-ocr/tesseract/wiki/ImproveQuality#rotation--deskewing)
 tesseract may perform badly.
