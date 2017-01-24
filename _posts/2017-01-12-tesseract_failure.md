@@ -2,7 +2,6 @@
 layout: post
 title:  "A Failed Case for Cracking Captcha with Tesseract"
 date:   2017-01-12 19:59:03 -0800
-categories: tesseract ocr
 ---
 One day I came accross some source codes to crawl login pages protected by captcha. The code simply downloaded the captcha locally and asked human to manually crack it. I wondered whether we could use Tesseract to crack the captcha, but failed due to some Tessact limitations. This article shared some of the findings.
 
