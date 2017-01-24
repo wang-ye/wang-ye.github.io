@@ -72,3 +72,4 @@ Turned out the rotation actually affected the detection accuracy a lot.
 This is also confirmed by the following doc, which says [under rotation](https://github.com/tesseract-ocr/tesseract/wiki/ImproveQuality#rotation--deskewing)
 tesseract may perform badly.
 As the final take-away, tesseract has some limitations such as the ignorance of rotation, which make it unsuitable for cracking captcha directly.
+
