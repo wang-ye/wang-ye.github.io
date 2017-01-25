@@ -37,7 +37,7 @@ cd abc.github.io && jekyll new .
 ## Adding Images and Comments
 Now we have a basic blog running, but it is not good enough - we want to embed images in our blog, also, we want to interact with readers through comments. 
 
-To serve your image "image.gif" in your blog, you first put it under "_assets" directory. Then in your blog, just refer it as "{{ site.url }}/assets/image.gif".
+To serve your image "image.gif" in your blog, you first put it under "_assets" directory. Then in your blog, just refer it as {% raw %} "{{ site.url }}/assets/image.gif" {% endraw %}.
 
 As to comments, Disqus is a nice tool for supporting the [user comments](http://stackoverflow.com/a/22201969). All you need to do are:
 
