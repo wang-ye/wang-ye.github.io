@@ -3,67 +3,47 @@ layout: post
 title:  "Moving Personal Blog to Github Pages"
 date:   2017-01-23 19:59:03 -0800
 ---
-Previously I used Github as poor man's blog site. After a while, I wanted to have a real blog with comment support. Thus, I turned to Github pages for help.
-Github pages come to rescue. It has good support for Jekyll, a blog building ruby service.
-After some investigation, I decided to move to Github pages.
+I used to have Github to host my blogs in markdown format. After some struggling, I really wanted to have a real blog with good theme, index page and user comment support. After some research I decided to move to [Github pages](https://pages.github.com/), and I am quite happy with it. This blog discusses the rationale of my transition and the detailed transition steps.
 
 ## Why Github Pages?
+Github page offers many advantages compared to a vanilia github markdown blog.
+
 1. Reliable hosting - Github pages are hosted by Github. The blog comes directly from your Github repo.
 2. Sharing with community - I can put the whole blog in the Github repo. Coders love sharing!
 3. Easy to use - The blogger repo is just another normal Github repo. You can add, commit, push and done!
-4. Close integration with Jekyll, the Blog Generator.
+4. Close integration with Jekyll, the ruby blog generator. This brings me theme, index page and some other goodies.
 
 ## Migration In Simple Steps
-1. Create a repo "username,github.io" in your github account. For simplicity, let's assume username is "abc".
-2. On your local macine, run 
-
-```shell
+1. Create a repo "github_name,github.io" in your github account. For simplicity, let's assume your github user name is *abc*.
+2. Clone your github.io repo to local envionment. On your local macine, run 
+```
 git clone git@github.com:abc/abc.github.io.git
 ```
-
-3. Assume you alreayd have Ruby installed, now install Jekyll and bundler in your local machine.
-
-```shell
+3. Assuming you already have Ruby installed, now install Jekyll and bundler locally. Run
+```
 sudo gem install jekyll bundler
 ```
-
-4. Enter your github.io directory, and generate the skeleton for your blog under your github.io directory.
-
-```shell
+4. Enter your github.io directory, and generate the skeleton for your blog under your github.io directory. Run
+```
 cd abc.github.io && jekyll new .
 ```
-
-5. Now start serving the blog! You will see a "Welcome" page. Check the server address to show the log locally. Usually the address is "http://127.0.0.1:4000/
-".
-
-```shell
+5. Now start serving the blog!  Run
+```
  bundle exec jekyll serve
 ```
-
-6. It is time for the migration - you can copy the old markdown blogs under the "_post" directory, Name your markdown as "YYYY-MM-DD-blog-name.md" so that Jekyll can understand it.
+, and type the server address to the browser.  Usually the address is http://127.0.0.1:4000/. You will be able to see blog index page.
+6. It is time for the migration - you can copy your old markdown files under the "_post" directory. Name your markdown as "YYYY-MM-DD-blog-name.md" so that Jekyll can understand and serve it.
 
 ## Adding Images and Comments
-We have a basic blog running, but it is not good enough - we want to embed images in our blog and let readers comment on it. To set up the images, you can first put the images under "_assets" directory. Then, in your blog, you can refer the image as "{{ site.url }}/assets/captcha.gif".
+Now we have a basic blog running, but it is not good enough - we want to embed images in our blog, also, we want to interact with readers through comments. 
 
-You also want to set up comments for your blog. Fortunately, Disqus can support the [user comments](http://stackoverflow.com/a/22201969) easily. All you need to do are:
+To serve your image "image.gif" in your blog, you first put it under "_assets" directory. Then in your blog, just refer it as "{{ site.url }}/assets/image.gif".
+
+As to comments, Disqus is a nice tool for supporting the [user comments](http://stackoverflow.com/a/22201969). All you need to do are:
+
 1. Create an account in Disqus.
-2. Create a _layout_directory, and add a post.html inside that directory.
-
-```html
----
-layout: default
----
-
-<h2 class="post_title">
-  {{ page.title }}
-</h2>
-
-{{ content }}
-
-{% include disqus.html %}
-```
-
-3. Create disqus.html inside _includes directory_
+2. Create a _layout_directory, and add a [post.html](https://github.com/wang-ye/wang-ye.github.io/blob/master/_layouts/post.html) inside that directory.
+3. Create [disqus.html](https://github.com/wang-ye/wang-ye.github.io/blob/master/_includes/disqus.html) inside _includes directory_
 
 ```html
 <div id="disqus_thread"></div>
@@ -82,7 +62,7 @@ layout: default
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>2
 ```
 
-You can find all the examples in [my blog](https://wang-ye.github.io/).
+You can find the files in [my blog](https://wang-ye.github.io/).
 
 ## What's Next?
-I am thinking about adding static comments and host the comments in github pages too. Fortunately, there have been [articles](https://github.com/mpalmer/jekyll-static-comments) about it.
+I am thinking about adding static comments and host the comments in Github pages too. Fortunately, there have been [articles](https://github.com/mpalmer/jekyll-static-comments) about it.
