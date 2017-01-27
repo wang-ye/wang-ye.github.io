@@ -48,16 +48,18 @@ chunk_size = 15
 template = build_template(n, chunk_size) 
 ```
 
-What is the underlying magic here? 
-
-
 Running the above code gets us the 15 probabilities, and it is easy to verify that these 32768 possible label combinations lead to different scores.
 
-## What Else?
-Actually, if we are willing to accept a bit of uncertainties, we can use the following probabilistic approach:
-Pick K uniformly distributed values among [0, 1], and then run through the algorithm.
-But is there another way to crack the labels? Consider the following case - if predict all labels as
+What is the underlying magic here? Assume for an image, the ground truth probability is 1. with Taylor Expansion at *2* on the sigmoid function, the calculated score is:
 
-This would give you a lot of collisions. For example, when trying 
+![]({{ site.url }}/assets/log2.png)
 
-## Final Thuoghts
+On the other hand, if the ground truth probability is 0, the calculated score is
+
+![]({{ site.url }}/assets/log4.png)
+
+By summing all the scores together, it is easy to know which ground truth probability is 0 and which is 1!
+
+## Final Thoughts
+If Kaggle returns more than 5 digit precision, say 9 digits, then we can crack even more images each time. Following Oleg's script, I wrote a [simple one](https://github.com/wang-ye/code/blob/master/python/kaggle_leaderboard_cracker.py) to play with the different conditions by varying epsilon, the precision and the base of the exponential expression.
+With more precisions, we will be also able to crack more images each time. If you are willing to tolerate small uncertainties, then you can crack even more images with a high probability.
