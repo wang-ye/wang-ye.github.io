@@ -6,7 +6,7 @@ date:   2017-01-20 19:59:03 -0800
 ![]({{ site.url }}/assets/social_share.png)
 One day I wondered how we produce the social sharing link easily. After some searching, I found an open source project called [share.js](https://github.com/overtrue/share.js). I am a JS newbee, and I learned some useful stuff from this relatively simple repo. In this blog I will talk about my learings of *share.js*.
 
-## How To Use
+### How To Use
 Here is a simple use case - inside the HTML body, user configures the title and description in a div of 'share-component' class:
 
 ```html
@@ -15,14 +15,14 @@ Here is a simple use case - inside the HTML body, user configures the title and 
 
 This simple setting will enable the creation of the sharing buttons!
 
-## Repo Structure
+### Repo Structure
 The repo has several pieces:
 1. src: the sorurce coding containing JS, css and fonts.
 2. gulpfile.js: The build file for generating the minified css/js files. The files are stored in the dist directory.
 3. dist: js/css scripts location after minifying. you can directly use them for building the sharing buttons.
 4. npm/bower files for easily installing the library.
 
-## Anatomy of The Source Code
+### Anatomy of The Source Code
 This repo uses the [Imediately invoked function expression (IIFE)](https://toddmotto.com/what-function-window-document-undefined-iife-really-means/),
 in the format of (function (window, document, undefined) {})(window, document).
 This funciton is executed immediately after being created. This pattern is often used when trying to avoid polluting the global namespace, because all the variables used inside the IIFE (like in any other normal function) are not visible outside its scope. IIFE also makes it easier for minifying.
@@ -114,5 +114,5 @@ In makeUrl method, data argument is the combination of data-* fields in the 'sha
 As a side note, gulp is used for building and minifying the contents.
 It combines and minifies qrcode.js and social-share.js into a file called social-share.min.js, and style files under css are processed with a name social-share.min.css.
 
-## Some Learnings
+### Some Learnings
 First time reading open-source JS repository! It is a reasonable example about how to orgnize the code.

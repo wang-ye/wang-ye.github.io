@@ -5,7 +5,7 @@ date:   2017-01-12 19:59:03 -0800
 ---
 One day I came accross some source codes to crawl login pages protected by captcha. The code simply downloaded the captcha locally and asked human to manually crack it. I wondered whether we could use Tesseract to crack the captcha, but failed due to some Tessact limitations. This article shared some of the findings.
 
-## Enviornment Setup
+### Enviornment Setup
 My OS is Ubuntu 16.04. [Tesseract](https://github.com/tesseract-ocr/tesseract) provides a command line tool for OCR purposes. To install it:
 
 ```shell
@@ -47,7 +47,7 @@ $ convert captcha.gif captcha.jpg
 
 It generated the captcha in [jpg format]({{ site.url }}/assets/captcha.jpg). We can finally do the OCR now!
 
-## The Real Meat
+### The Real Meat
 Run tesseract with single line PSM mode, we get
 
 ```
