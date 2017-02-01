@@ -27,7 +27,7 @@ sudo gem install jekyll bundler
 ```
 cd abc.github.io && jekyll new .
 ```
-5. Now start serving the blog!  Run
+5. Now start serving the blog locally!  Run
 ```
  bundle exec jekyll serve
 ```
