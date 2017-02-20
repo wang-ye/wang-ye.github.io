@@ -1,8 +1,30 @@
 Practical Rails Debugging Tips
 
-A lot of the Ruby stuff are quite old. 
+Writing specs with transaction involved. 
 
-Using Pry
+Pry is an alternative to Ruby's interactive shell Irb,  Ipython to python shell. It provides a lot of features. 
+
+Dynamic invocation with binding.pry
+
+Navigation
+standard navigation commands: next, step and continue
+and a command to show the current execution line and its context
+
+```
+whereami or just use @
+```
+
+Show stack-trace
+
+
+1. Set breakpoints
+Conditional breakpoints
+
+
+Live editing
+
+
+## Pry Shortcuts
 Start with the Pry cheetsheet: https://gist.github.com/lfender6445/9919357
 
   !!!                Alias for `exit-program`
@@ -23,13 +45,18 @@ play + wtf?
 @ to show current code
 $ to show source
 
-Setting breakpoints is an art.
+## Setting breakpoints
 
 cat --ex
 
-ActiveRecord and Transactions
+## Showing DB Queries From ActiveRecord
+Sometimes we want to know the actual DB queries ActiveRecord generates. This can be achieved in a simple command:
 
-
+```
 ActiveRecord::Base.logger = Logger.new(STDOUT)
+```
 
-Rspecs & FactoryGirl
+
+## Understanding Rails Transactions
+
+## What is Zeus
