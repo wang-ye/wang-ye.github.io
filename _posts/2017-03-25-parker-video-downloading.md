@@ -19,16 +19,17 @@ Then with request package, crawl the flv directly. Yes, the request package is t
 For Youtube, it is a lot more complex. Feel free to check the source code.
 
 What I like about this project:
+
 1. Configurable system. The project puts all the configurations into the config directory. Inside the directory you can specify the logging format, the URL and port of various services such as Celery and Statsd, as well as the channels and playlists you want to monitor.
 2. Monitoring effort
 With the use of statsd and Grafana, Parker enjoys a very nice monitoring UI. You can go to the [README](https://github.com/LiuRoy/parker) to see the monitoring plots.
 3. The use of Docker to simplify the system configuration. It recommends the use of a docker image to set up the Grafana monitoring with a single command.
 How to quickly set up a production environment?
 https://hub.docker.com/r/samuelebistoletti/docker-statsd-influxdb-grafana/
-4. The great tool you-get to download any videos you want in command lines!
-https://github.com/soimort/you-get
+4. The great tool [you-get](https://github.com/soimort/you-get) to download any videos you want in command lines!
 
 What can be done differently
+
 A task retry mechnisum
 More modualr code - extract the common pieces together.
 I got to understand the power of docker. A docker image that configures everything and immediately runnable :)
