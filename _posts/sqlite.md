@@ -69,3 +69,6 @@ Pager?
 
 What can we learn from sqlite?
 test coverage. well tested?
+
+Debugging tips:
+https://www.sqlite.org/debugging.html
