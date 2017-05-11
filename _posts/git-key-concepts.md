@@ -1,28 +1,78 @@
 Think in Workflows, Not in Commands - A pragmatic Git Guide
 
-When I started using Git, I got so confused. I have a svn background, and could not map the Git concepts to SVN.
+When I started using Git, I got so confused. I have a svn background, and could not easily map the SVN concepts to git.
 
 In git, changes happen in Branches.
 
+After using Git for a while, I finally realized for the everyday work, we only need to know a couple of Git commands. I want to share my thoughts on simplifying the Git usages.
 
-To resolve the conflicts
+More specifically, a rebase workflow with a couple of steps, on top of Github.
 
-0. Make a local branch
+Remote and Local
 
-1. Make changes locally
-Say you want to add a new feature to your website. The new feature is showing the FB trending news when your user visits your website.
+1. Create a local branch
+In Git, work is done in *branches*. Say you want to add a new feature to your website. You will want to first create a local branch, which can be an exact copy of the production/develop code, and only visible to yourself. Then you make corresponding changes in this branch. Once you are done, you **commit** the changes. Note that, till this moment the changes are only visible to yourself.
 
-2. Publish your changes to remote server
+Useful commands:
+
+```
+git rebase master
+# Create a branch feature-x-branch, which is an exact copy 
+# of the master branch.
+git checkout -b feature-x-branch master  
+# Open abc.py and make some changes.
+vi abc.py
+# Add abc.py to your local commit.
+git add abc.py && git commit -m 'First version for X feature'
+```
+
+2. Publish your commit to remote server
+When you are confident the code will make a positive impact to the product, you can push your changes to remote server, which in our case is Github enterprise servers. Now, your code is available for peer reviews. Other engineers will give you comments and request for new features. You will further improve your code by addressing their comments and concerns. You may also see some bullshit reviews full of adding or removing some blank lines. Working with these stupid reviewers is beyond the scope of this post though.
+
+Useful commands:
+
+```
+# Assuming you have set up the remote tracking branch
+# We will discuss more later.
+git push
+# Iterate on the code; address reviewer comments.
+vi abc.py
+# Commit again
+git add abc.py && git commit -m 'Handle edge case Y'
+# Push and request for reviews again, repeat the 
+# change-push-review until we are all happy.
+git push
+...
+```
 
 3. Merge your changes to production
-Merge may causes conflict. To resolve the conflict, you can use either merge-based approach or rebase-based approach. I use rebase-based approach, which produces cleaner history. 
+OK. After several rounds of reviews, your code is ready to merge into production! There are still a couple of things to consider though. You realize that you have a very messy commit history containing many "addressing style changes" and "removing extra lines". It is useless to keep these commits in the history. You can merge or rename your local commits if needed.
+An even more important question is conflict resolution. To resolve the conflict, you can use either merge-based approach or rebase-based approach. I use rebase-based approach, which produces a linear history.
 
 And you are done!!
+
+Useful tips:
+
+```
+You can simply click the merge button on Github when the pull request is ready.
+```
+
+## Git Productivity
+
+There are multiple ways to achieve the same goal.
+
+Like, you can merge or rebase.
+
+Use add or not
+
+Whether to use stash.
 
 
 Git add & git commit
 
 git reflog
+
+To resolve the conflicts
 
 What is git stash
 
