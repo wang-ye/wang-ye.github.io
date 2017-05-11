@@ -1,14 +1,36 @@
-Think in Workflows, Not in Commands - A pragmatic Git Guide
+Beginner Git Workflows Made Simple
 
 When I started using Git, I got so confused. I have a svn background, and could not easily map the SVN concepts to git.
 
-In git, changes happen in Branches.
+Instead of introducing a lot of Git commands, I will try to expose as few Git commands as possible. A simplified view of Git Workflow.
+
+## Git Basic Concepts
 
 After using Git for a while, I finally realized for the everyday work, we only need to know a couple of Git commands. I want to share my thoughts on simplifying the Git usages.
 
+Branches, Commits and Repositories
+In git, all changes happen in Branches.
+
+To contribute to the codebase, you first create a branch and make changes inside the branch, then create a commit for your change, and finally merge the commit to the repositories, which stores the codebase and its change history.
+
+
+
+Commit History Graph
+A rebase view:
+How Git organize the commits? It can be viewed as a [graph](http://stackoverflow.com/questions/1057564/pretty-git-branch-graphs). Think it as a river. There is a main flow that keeps going forward, but occasionally, there could be branching, these branching can merge back to the main flow, or they can depart.
+
+Remote VS Local
+Git is a distributed system. There is a central node - the remote repository. You can create a local repository. It talks with the remote repository.
+
+Rebase VS Merge
+
+What is rebase?
+
+fast-forward to create a linear history.
+
 More specifically, a rebase workflow with a couple of steps, on top of Github.
 
-Remote and Local
+## Simplified Git Workflow
 
 1. Create a local branch
 In Git, work is done in *branches*. Say you want to add a new feature to your website. You will want to first create a local branch, which can be an exact copy of the production/develop code, and only visible to yourself. Then you make corresponding changes in this branch. Once you are done, you **commit** the changes. Note that, till this moment the changes are only visible to yourself.
@@ -54,37 +76,9 @@ And you are done!!
 Useful tips:
 
 ```
-You can simply click the merge button on Github when the pull request is ready.
+You can simply click the merge button on Github
+when the pull request is ready.
 ```
-
-## Git Productivity
-
-There are multiple ways to achieve the same goal.
-
-Like, you can merge or rebase.
-
-Use add or not
-
-Whether to use stash.
-
-
-Git add & git commit
-
-git reflog
-
-To resolve the conflicts
-
-What is git stash
-
-staging helps you split up one large change into multiple commits
-Let's say you worked on a large-ish change, involving a lot of files and quite a few different subtasks. You didn't actually commit any of these -- you were "in the zone", as they say, and you didn't want to think about splitting up the commits the right way just then. (And you're smart enough not to make the whole thing on honking big commit!)
-Now the change is all tested and working, you need to commit all this properly, in several clean commits each focused on one aspect of the code changes.
-With the index, just stage each set of changes and commit until no more changes are pending. Really works well with git gui if you're into that too, or you can use git add -p or, with newer gits, git add -e.
-
---Set-upstream to link local and remote
-Origin
-
-Stash really necessary?
 
 ## Other frequent actions
 
@@ -109,6 +103,49 @@ cherry-pick: apply one code snippet to another branch. copy paste
 
 Resolve conflict tools
 
+## Making Workflow Even Simpler
+In Git, you can achieve the same goal through multiple approaches. This, for beginners, will often cause confusions.
+
+If you read some other Git tutorials, 
+
+you will realize the concept of staging. I rarely find it useful.
+Is this really worth the dedicated command and extra typing?
+
+I instead always merge the add and commit into a single command
+
+
+```
+alias gac='git add . && git commit -am '
+```
+
+Another frequent action is picking up the latest changes for my current branch. This is especially useful to avoid merge conflict. The following composite command is used:
+
+```
+alias rbm="git checkout master && git pull --rebase origin master && git checkout - && git rebase master"
+```
+
+Stashing changes can be a powerful tool for some users.
+
+## Git Productivity Tools
+
+In Mac, there is a [Github For Mac](). It has builtin workflow you can follow.
+
+In all modern IDEs, there are git Plugins. 
+
+For command line tools, you can try [legit](). This article is also deeply influenced by legit.
+it support only a small set of instructions:
+
+There are multiple ways to achieve the same goal.
+Like, you can merge or rebase.
+Use add or not
+Whether to use stash.
+
+Git add & git commit
+
+git reflog
+
+To resolve the conflicts
+
 ## Useful .gitconfig
 
 Rerere config
@@ -121,5 +158,6 @@ https://github.com/verekia/js-stack-from-scratch
 https://github.com/kennethreitz/legit
 Git for human
 
-## Powerful Git Tools
-Github for Mac
+## Summary
+Trying to grasp all the useful commands all at once will only serve to confuse Git beginners. Instead, it is better to understand the basic Git concepts, and the typical workflow.
+Later, you can tailer your Git toolbox to include commands like stash, cherrypick and many other things.
