@@ -13,8 +13,6 @@ In git, all changes happen in Branches.
 
 To contribute to the codebase, you first create a branch and make changes inside the branch, then create a commit for your change, and finally merge the commit to the repositories, which stores the codebase and its change history.
 
-
-
 Commit History Graph
 A rebase view:
 How Git organize the commits? It can be viewed as a [graph](http://stackoverflow.com/questions/1057564/pretty-git-branch-graphs). Think it as a river. There is a main flow that keeps going forward, but occasionally, there could be branching, these branching can merge back to the main flow, or they can depart.
@@ -25,10 +23,10 @@ Git is a distributed system. There is a central node - the remote repository. Yo
 Rebase VS Merge
 
 What is rebase?
-
 fast-forward to create a linear history.
-
 More specifically, a rebase workflow with a couple of steps, on top of Github.
+
+https://www.atlassian.com/git/tutorials/merging-vs-rebasing
 
 ## Simplified Git Workflow
 
