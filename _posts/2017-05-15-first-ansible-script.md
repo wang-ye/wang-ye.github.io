@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Flask-base Virtual Environment with Ansible"
-date:   2017-05-15 21:35:03 -0800
+date:   2017-05-14 21:35:03 -0800
 ---
 
 [flask-base](https://github.com/hack4impact/flask-base) is a flask application template with extensive boilerplate code. I found it annoying to configure the local environment by following tedious instructions. Basically, you need to manually install the right Python version, and various services such as postgres, redis and ruby. To simplify the process, I thus spent some time building a virtual development environment using with Vagrant, Virtualbox and Ansible. This post talks about my configuration scripts.
