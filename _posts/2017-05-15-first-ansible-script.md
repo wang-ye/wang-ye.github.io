@@ -1,30 +1,29 @@
-I was playing with [flask-base](https://github.com/hack4impact/flask-base) recently, and found it annoying to configure the local environment.
+---
+layout: post
+title:  "Flask-base Virtual Environment with Ansible"
+date:   2017-05-15 21:35:03 -0800
+---
 
-Ideally, I want to run dev-mode flask-base in a container. I played with Vagrant + Virtualbox + Ansible and finally get a working version. This is a personal note on the configurations.
+[flask-base](https://github.com/hack4impact/flask-base) is a flask application template with extensive boilerplate code. I found it annoying to configure the local environment by following tedious instructions. Basically, you need to manually install the right Python version, and various services such as postgres, redis and ruby. To simplify the process, I thus spent some time building a virtual development environment using with Vagrant, Virtualbox and Ansible. This post talks about my configuration scripts.
 
-The commit hash is dcf02d809ab76f47a78dc99c35c9c84bc22cebf6
+## Prerequisite
 
-The full script can be found at : https://github.com/wang-ye/code/tree/master/flask-base-ansible
+To build this virtual environment, you first need to install 
+[Virtualbox](https://www.virtualbox.org/wiki/Downloads), [Vagrant](https://www.vagrantup.com/downloads.html) and Ansible. 
+Ansible is a Python package and can be installed with:
 
-Simply put, Vagrant serves as the commander (guest machine on/off/status, ssh into guest machine), Virtualbox is the actual container (bare guest OS holder), while Ansible is the provisioner (install necessary softwares and start services).
-
-To play with it,
-First, you will need to install necessary softwares.
-Virtualbox,
-Ubuntu:
-https://www.virtualbox.org/wiki/Downloads
-
-sudo apt-get install virtualbox
-Mac: 
-
-For Vagrant,
-Download from here: https://www.vagrantup.com/downloads.html
-
-For Ansible,
-it is a Python package, you can use:
+```shell
 pip install ansible
+```
+
+Simply put, Vagrant serves as the commander (guest machine on/off/status, ssh into guest machine); Virtualbox is the actual container (bare guest OS holder), while Ansible is the provisioner (installing necessary softwares and start services). A simple hello-world example with the above tools can be found [here](https://gist.github.com/drgarcia1986/386a7546fa9c8ba47f39).
+
+## Detailed Config
+
+The configration mainly contains two pieces - a Vagrantfile and Ansible YML configuration. The Vagrantfile is as follows:
 
 ```ruby
+# Vagrantfile
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
@@ -63,10 +62,13 @@ Vagrant.configure(2) do |config|
 end
 ```
 
-Note that, flask-base uses Python3. To enable Python3, we use:
-ansible_python_interpreter: '/usr/bin/python3'
+Vagrant takes advantage of synced folder to easily share code and data between guest and host machines. It uses Ansible to provision the virtual machines. The detailed provision instructions are listed in *site.yml*. It is worth noting that [Ansible enables Python3](https://docs.ansible.com/ansible/python_3_support.html) with
 
-Another thing worth noting is we applied synced folder, which can easily share the source and data between guest and host.
+```
+ansible_python_interpreter: '/usr/bin/python3'
+```
+
+Now, let's jump to Ansible configuration details:
 
 ```yml
 - name: Configure application
@@ -100,17 +102,35 @@ Another thing worth noting is we applied synced folder, which can easily share t
       shell: cd /; nohup python3 /home/ubuntu/flask-base/manage.py runserver --host 0.0.0.0 > /home/ubuntu/flask-base/web_log 2>&1 &
 ```
 
-What is does:
+It does the following:
+
 1. Run the tasks with sudo permission.
 2. Install necessary packages, such as python, redis, ruby, sass and postgres db.
 3. Install requirements with pip.
 4. Start the App in dev mode.
 
-It is worth noting that to access guest machine app from host, you have to set the host to '0.0.0.0'. I spent hours on it.
+**It is worth noting that to access guest machine app from host, you have to set the host to '0.0.0.0'. I spent hours debugging this issue ...**
 
-More TODOs:
+The full script can be found [here](https://github.com/wang-ye/code/tree/master/flask-base-ansible). The flask-base commit hash I worked on is [dcf02d8](https://github.com/hack4impact/flask-base/commit/dcf02d809ab76f47a78dc99c35c9c84bc22cebf6).
+
+## How To Use
+You can first download the [full scripts](https://github.com/wang-ye/code/tree/master/flask-base-ansible). To start guest machine, just run
+
+```shell
+vagrant up --provision
+```
+
+Once guest machine is up and running, you can access the app in *localhost:7000*.
+
+If you want to enter the guest machine to fine-tune the commands, logging into the machine is as simple as
+ 
+```shell
+vagrant ssh
+```
+
+## Summary
+This posts discusses the virtual environment configuration for flask-base. It provides a python3-compliant, easy-to-use virtual environment. Some future enhancements include:
+
 1. We can have virtualenv set for the guest machine. This way we can precisely specify the desired Python version 
 2. Enable it to work in production environment.
 3. Make the script more modular with roles.
-
-https://gist.github.com/drgarcia1986/386a7546fa9c8ba47f39
