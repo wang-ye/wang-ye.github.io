@@ -38,7 +38,6 @@ Faker = Factory.create
 To use Faker package, you can simply call
 Faker().first_name()
 """
-
 ```
 
 The **create** method takes in locales, and builds an object (generator) to hold the methods on the fly to generate fake data.
