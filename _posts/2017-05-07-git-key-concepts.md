@@ -3,16 +3,16 @@ layout: post
 title:  "Git Workflow Made Simple For Beginners"
 date:   2017-05-07 17:49:03 -0800
 ---
-After using Git for several years, I realized that for our everyday work, we really only need to know ten Git commands. Of course, there are some fancy git tricks, but most of the beginners will rarely need them.
-In this post I want to share my thoughts on simplifying the Git usages. I will start with basic git concepts, and then we will dive into a common workflow and introduce the absolutely necessary git commands to fullfill this flow.
+After using Git for several years, I realized that for everyday work, we really only need to know ten Git commands. Of course, there are some fancy git tricks, but the beginners will rarely need them.
+In this post I want to share my thoughts on learning git from *workflows*, a.k.a. the git commands you really need. I will start with basic git concepts, and then dive into a common workflow which covers only the absolutely necessary Git commands.
 
 ## Git Basic Concepts
-OK, let's start with the Git concepts. I will use painting concepts to help illustrate.
+First, some Git concepts. I will sometimes use a painting example to help understand.
 
-1. In git, all changes happen in **branches**. You can also view the branches as the canvas of the painter.
-2. Once you finish all the changes, you **commit**, meaning that the change is ready to merge into production. Similarly, this means the painter finishes a draft, and it is ready to be published to the public!.
-3. Git is a distributed system. There are two environments - **remote and local**. The commits are first made in local environment, and then you further submit the changes to remote environment. Similarly, when a painter's artwork is completed at your home (local environment), you send it to the art marketplace (remote environment).
-4. [**Rebase**](https://git-scm.com/book/en/v2/Git-Branching-Rebasing) flow. Once the changes is in a remote develop branch, you will need to **merge** the branch to remote master branch. I personally prefer to rebase the changes, which moves the new commits on top of existing commits. This usually makes a cleaner, linear history. Whatever you like, just choose one and stick to it.
+1. In git, all changes happen in **branches**. You can also view them as the canvas of the painter.
+2. Once you finish all the changes, you **commit**, meaning that the change is ready to merge into production. Similarly, this means the painter finishes a draft, and it is ready to be sold to the public!.
+3. Git is a distributed system. There are two environments - **remote** and **local**. The commits are first made in local environment, and then you further push them to remote environment. Similarly, after a painter completes the work in the studio (local environment), he sends it to the art marketplace (remote environment).
+4. [**Rebase**](https://git-scm.com/book/en/v2/Git-Branching-Rebasing) flow. Once your commit is in a remote develop branch, you will need to **merge** the branch to remote master branch. I personally prefer to rebase the changes, which moves the new commits on top of existing commits. This usually makes a cleaner, linear history. Whatever you like, just choose one and stick to it.
 5. Each repository has its git change history, which is a directed graph with the commits being the nodes. You can move back and forth along the history, and create new branches based on any commit in the history.
 
 ## A Workflow That Works
@@ -54,9 +54,9 @@ Finally, after several rounds of reviews, your code is ready to merge into produ
 If you use Github, simply click the merge button on
 Github when the pull request is ready.
 ```
-<!-- 
-## Git Productivity and Toolkits
-The above should be enough to get you started, but you still can get a big boost by having some configuration changes. This section I will discuss the shell and git related configurations.
+
+## Git Command Line Productivity
+The above should be enough to get you started, but you still can get a big boost by having some more configurations. This section I will talk about the shell and git related configurations.
 
 Here are my shell shortcuts to save a couple of key strokes:
 
@@ -73,22 +73,21 @@ alias gac='git add . && git commit -am '
 alias rbm="git checkout master && git pull --rebase origin master && git checkout - && git rebase master"
 ```
 
-For rebase workflow, a frequent action is getting your branch to be in sync with master to pick up the latest changes and resolve the potential conflicts.
-Another frequent action is picking up the latest changes for my current branch. This is especially useful to avoid merge conflict. The following composite command is used:
+There are a couple of shortcuts to emphasize. For rebase workflow, a frequent action is getting your branch in sync with master by calling `git rebase`.  In the above we designed a composite command:
 
-```
+```shell
 alias rbm="git checkout master && git pull --rebase origin master && git checkout - && git rebase master"
 ```
 
-I instead always merge the add and commit into a single command
+Most of the time `git add` is just an intermediate command towards committing the changes.  The following `gac` combines `add` and `commit` commands together:
 
-```
+```shell
 alias gac='git add . && git commit -am '
 ```
 
-In .gitconfig, some important entries 
+*.gitconfig* contains the git specific settings: 
 
-```shell
+```.gitconfig
   [color]
     ui = auto
   [core]
@@ -105,77 +104,29 @@ In .gitconfig, some important entries
     tool = kdiff3
 ```
 
-rerere is used for recording the previous rebase conflict resolution, and apply it directly.
+To illustrate, *rerere* is used for recording the previous rebase conflict resolution results, and apply them directly in the future. The *push* setting dictates that by default `git push` pushes local branch to a remote one with the same name. `kdiff3` is applied for resolving merge conflicts locally.
 
-push set up the remote tracking to the branch with the same name.
-For .gitignore, you can find one online.
-https://github.com/verekia/js-stack-from-scratch
+A brief note about other powerful git tools: in Mac, there is a [Github For Mac](). It has a built  -in workflow you can follow. In all modern IDEs, there are git Plugins. For command line tools, you can try [legit](https://github.com/kennethreitz/legit). BTW, this article is also deeply influenced by legit.
 
-In Mac, there is a [Github For Mac](). It has builtin workflow you can follow.
+## Undo Changes, and Clean Up History
+To work fluently with git, you also need to know  a couple more actions. One is undo the previous action, and the other is cleaning up the local history before committing to remote repository.
 
-In all modern IDEs, there are git Plugins. 
-To resolve the conflicts
-
-For command line tools, you can try [legit](). This article is also deeply influenced by legit.
-it support only a small set of instructions:
-
-There are multiple ways to achieve the same goal.
-Like, you can merge or rebase.
-Use add or not
-Whether to use stash.
-
-Legit
-https://github.com/kennethreitz/legit
-Git for human
-
-In Git, you can achieve the same goal through multiple approaches. This, for beginners, will often cause confusions.
-
-If you read some other Git tutorials, 
-
-you will realize the concept of staging. I rarely find it useful.
-Is this really worth the dedicated command and extra typing?
-
-Stashing changes can be a powerful tool for some users.
-
-## Other Common Actions
-In this section we discuss two frequent actions: undo the previous action, and clean up the local history before committing to remote repo.
-
-### Undo Previous Action
+### Undo Previous Changes
 You can also revert your changes easily, or modify your local history.
 No matter which stages your change is in.
 
-Changes not staged: Git checkout -- abc.py go back to the original file
-
-Changes staged but not committed: 
-# Git add abc.py; git reset HEAD abc.py
-Git checkout HEAD abc.py
-
-git reset -- files 用来撤销最后一次git add files，你也可以用git reset 撤销所有暂存区域文件。
-
-Committed files: git reset --hard HEAD^
-
-Checkout VS reset: http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001374831943254ee90db11b13d4ba9a73b9047f4fb968d000#0
+1. Existing file changes; not staged: `git checkout -- abc.py` to go back to the original file.
+2. Changes staged but not committed: `git add abc.py; git reset HEAD abc.py`
+3. Discard committed changes: `git reset --hard HEAD^`
 
 ### Clean Up Local History
-There are still a couple of things to consider though. You realize that you have a very messy commit history containing many "addressing style changes" and "removing extra lines". It is useless to keep these commits in the history. You can merge or rename your local commits if needed.
-An even more important question is conflict resolution. To resolve the conflict, you can use either merge-based approach or rebase-based approach. I use rebase-based approach, which produces a linear history.
-Clean up local history? git rebase
+Assume you make a very messy commit history containing many "style changes" and "removing extra lines". It is useless to keep these commits in the final git history. Here is the trick: you can merge or rename your local commits using `git rebase`. 
+<!-- Clean up local history. -->
 
-Resolve conflict tools
-
-## Stuff I Intentionally Omitted
+<!-- ## Stuff I Intentionally Omitted
 If you are a experience Git user, you may notice that I omitted a lot of git commands, such as [stash]() and [cherry-pick](). Also, you can find my compond command gac, which simply skips the staging "git add" phase. 
 There are multiple ways to achieve the same goal.
 Like, you can merge or rebase.
-
-git reflog
-
-To resolve the conflicts
-
---Set-upstream to link local and remote
-Origin
-
-Stash really necessary?
 
 ## Summary
 Trying to grasp all the useful commands all at once will only serve to confuse Git beginners. Instead, it is better to understand the basic Git concepts, and the typical workflow.
