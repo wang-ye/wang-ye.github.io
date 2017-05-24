@@ -134,3 +134,12 @@ This posts discusses the virtual environment configuration for flask-base. It pr
 1. We can have virtualenv set for the guest machine. This way we can precisely specify the desired Python version 
 2. Enable it to work in production environment.
 3. Make the script more modular with roles.
+
+## P.S.
+One day, Vagrant reminded me of updating to new Ubuntu boxes. I followed the instruction and everything stopped working... If you want a consistent dev environment, do not forget to lock down the VM version:
+
+```shell
+  config.vm.box_version = "20170523.1.0"
+```
+
+The updated snippet can be found [here](https://github.com/wang-ye/code/tree/master/flask-base-ansible).
