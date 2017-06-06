@@ -1,31 +1,25 @@
-A Rental Visualizer Node App
+---
+layout: post
+title:  "A Rental Visualizer Node App"
+date:   2017-05-20 17:49:03 -0800
+---
 
-Node has gained popularity recently and I want to understand how to write a working and useful Node app. I previously read some Node basics and syntax, but still have no idea how to write a usable App. This time, instead of starting with the basic hello-world app, I prefer to read open source project.
-The App we are going to cover is called [Rental](https://github.com/answershuto/Rental) with commit hash [4e9a59a](https://github.com/answershuto/Rental/commit/4e9a59ab7849127022094ac8890d4748b0d0a383).
-
-## An Intro for Rental
-This is an App to visualize available rentals in any China city.
+Node has gained much popularity recently and I want to understand how to write Node app. Instead of starting with the basic hello-world app, I believe reading some interesting open source project is the quickest way to learn. So here we go: the App to discuss is called [Rental](https://github.com/answershuto/Rental). It is used to visualize available rentals in any China city. The commit hash is [4e9a59a](https://github.com/answershuto/Rental/commit/4e9a59ab7849127022094ac8890d4748b0d0a383).
 
 ## Code Structure
-The fact a simple `package.json` contains all information from installing dependencies and execution command really blew my mind every time.
-Running Rental is super easy
+The fact `package.json` contains all necessary information from installing dependencies to executing command blows my mind every time.
+Running Rental is super easy now:
 
 ```bash
 npm install && npm start
 ```
 
-The App is essentially a web application, The web framework is [express](https://expressjs.com/). As a side note, each of the JS file has three pieces:
-
-Importing other packages with require
-The actual logic
-Exporting the logic externally with module.exports
-
-Looking at `express.js`, it contains three pieces
+*Rental* is a web application, and it uses [express](https://expressjs.com/) as the web framework. We will start with `express.js`, which details different facets of the app.
 
 ```javascript
 var controller = require('../app/controllers/rental.server.controller');
 
-function(){
+module.exports = function(){
     var app = express();
 
     app.set('view engine','ejs');
@@ -41,25 +35,29 @@ function(){
 }
 ```
 
-After setting up the view engine and body parser, we found the the router and controller. Two routers are defined:
+In this project, each JS file contains three pieces:
 
-package.json to detail both dev and production dependencies and how to run the apps.
+1. Importing other packages with require
+2. The actual logic
+3. Exporting the logic externally with module.exports
+
+The application logic sets up the view engine and body parser. Also, we can locate the router and controller location. The models, on the other hand, do not exist. Two routers are defined:
 
 ```javascript
-    app.route('/')
-        .get(function(req,res,next){
-            res.sendFile('index.html');
-        });
+// In lib/router/route.js
+app.route('/')
+    .get(function(req,res,next){
+        res.sendFile('index.html');
+    });
 
-    app.route('/rental/getInfos')
-        .all(RentalController.getRentalInfos);
+app.route('/rental/getInfos')
+    .all(RentalController.getRentalInfos);
 ```
 
 Let's first dive into the controllers to see the how RentalController.getRentalInfos is coded.
 
 ```javascript
 // app/controllers/rental.server.controller.js
-
 getRentalInfos(){
     let params = {};
 
@@ -70,7 +68,7 @@ getRentalInfos(){
 }
 ```
 
-Rental details are retrieved from rentalInfosMap, which is populated by getting a list of URLs, and then extract certain fields.
+Rental details are all stored rentalInfosMap, which is populated by `analysis`:
 
 ```javascript
 // rental.server.controller.js
@@ -96,8 +94,10 @@ function analysis(url){
 }
 ```
 
-Finally, the froentend part.
-To visualize the houses, an Ajax call is initialted.
+It issues an HTTP request to a given URL, and extract certain fields with css selectors.
+
+Finally, the Viewer part. To visualize the houses, an Ajax call is initiated:
+
 ```javascript
 
     $.ajax({
@@ -110,6 +110,7 @@ To visualize the houses, an Ajax call is initialted.
         error: getInfosErr ,
     })
 ```
-If success, getInfoSuc is called to draw the maps and houses on Baidu Map, a famous map product in China.
+If success, getInfoSuc (code omitted for simplicity) is called to draw the maps and houses on Baidu Map, a famous map product in China.
 
-This is what happens in this Node app.
+## Summary
+This is an experiment to learn new languages (Node here) through reading open source projects. I find it especially useful to understand the code organization and get familiar with the tools. It also provides directions regarding which packages to start with. I will definitely try more in the future.
