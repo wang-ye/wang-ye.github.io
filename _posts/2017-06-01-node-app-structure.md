@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "A Rental Visualizer Node App"
+title:  "Reading A Rental Visualizer Node Project"
 date:   2017-05-20 17:49:03 -0800
 ---
 
@@ -68,7 +68,7 @@ getRentalInfos(){
 }
 ```
 
-Rental details are all stored rentalInfosMap, which is populated by `analysis`:
+Rental details are all stored rentalInfosMap, each entry of which is populated by `analysis` method:
 
 ```javascript
 // rental.server.controller.js
@@ -94,23 +94,23 @@ function analysis(url){
 }
 ```
 
-It issues an HTTP request to a given URL, and extract certain fields with css selectors.
+`Analysis` method issues an HTTP request with a given URL, and extracts certain fields with css selectors.
 
-Finally, the Viewer part. To visualize the houses, an Ajax call is initiated:
+Finally, the Viewer part! To visualize the houses, an Ajax call is initiated:
 
 ```javascript
-
-    $.ajax({
-        'type': 'post',
-        'url': '/rental/getInfos',
-        'contentType': 'application/json;charset=utf-8',
-        'data': JSON.stringify({params: null}),
-        success: getInfosSuc ,
-        async: true,
-        error: getInfosErr ,
-    })
+// index.html
+$.ajax({
+    'type': 'post',
+    'url': '/rental/getInfos',
+    'contentType': 'application/json;charset=utf-8',
+    'data': JSON.stringify({params: null}),
+    success: getInfosSuc ,
+    async: true,
+    error: getInfosErr ,
+})
 ```
-If success, getInfoSuc (code omitted for simplicity) is called to draw the maps and houses on Baidu Map, a famous map product in China.
+If success, getInfoSuc (omitted for simplicity) is called to draw the maps and houses on Baidu Map, a famous map product in China.
 
 ## Summary
-This is an experiment to learn new languages (Node here) through reading open source projects. I find it especially useful to understand the code organization and get familiar with the tools. It also provides directions regarding which packages to start with. I will definitely try more in the future.
+This is an experiment to learn new languages (Node here) through reading open source projects. I find it especially useful to quickly understand the code organization and get familiar with the tools. This learning approach also provides directions regarding important packages to start with.
