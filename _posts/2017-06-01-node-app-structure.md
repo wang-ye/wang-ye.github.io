@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Reading A Rental Visualizer Node Project"
-date:   2017-05-20 17:49:03 -0800
+date:   2017-06-01 17:49:03 -0800
 ---
 
 Node has gained much popularity recently and I want to understand how to write Node app. Instead of starting with the basic hello-world app, I believe reading some interesting open source project is the quickest way to learn. So here we go: the App to discuss is called [Rental](https://github.com/answershuto/Rental). It is used to visualize available rentals in any China city. The commit hash is [4e9a59a](https://github.com/answershuto/Rental/commit/4e9a59ab7849127022094ac8890d4748b0d0a383).
