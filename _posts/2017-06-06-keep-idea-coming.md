@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Productivity and Perfection, Which is More Important?"
-date:   2017-05-20 17:49:03 -0800
+date:   2017-06-06 14:49:03 -0800
 ---
 My new year resolution is writing one hundred blog posts. However, so far I only finished a quarter. What's worse, I noticed a recent slowdown of my blogging speed. Several reasons contribute to this slowdown. First, I am getting lazier and could not find enough time blogging. second, my daily job takes a lot of time to finish, and third, I always want to produce "the perfect writeup", which involves revising it again and again. This costs a lot of time.
  
