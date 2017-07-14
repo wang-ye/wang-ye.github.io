@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "The Snake Game"
-date:   2017-06-06 14:49:03 -0800
+date:   2017-07-06 14:49:03 -0800
 ---
 
 In the past month I was busy working on a project deadline. Now that the project was shipped, I am back to the blogger life!
