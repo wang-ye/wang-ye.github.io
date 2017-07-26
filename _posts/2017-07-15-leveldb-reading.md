@@ -4,9 +4,6 @@ LevelDB is a well-known open source library for key-value storage.
 ## Basic Structure
 SSTable +  in-memory tables
 
-## What is a SSTable?
-Short for sorted string table. Immutable data stored on disk, and can be loaded easily into memory. Metadata about indexes. Good for sequential read.
-
 ## Key Performance Properties
 
 Write optimized KV store.
@@ -19,6 +16,8 @@ Random read access is good, but not so great. When searching old entries lying i
 
 ## Fault Recovery
 It uses a write-ahead logs. For example, if OS system crashes, the WAL will be used to recover the data.
+
+To signal errors, use a class called Status.
 
 ## API Design
 
@@ -51,21 +50,41 @@ virtual const Snapshot* GetSnapshot() = 0;
 virtual void ReleaseSnapshot(const Snapshot* snapshot) = 0;
 ```
 
-## A High-level Diagram
+## A High-level Physical Layout
 
 When a new k-v is inserted, it is first written to log. Write ahead logs. Then, it is inserted to Memtable, which is designed to improve random write performance.
 
-## Log Files
+### Log Files
 What is a log file?
 
-## Compaction
+### SSTable
+Short for sorted string table. Immutable data stored on disk, and can be loaded easily into memory. Metadata about indexes. Good for sequential read.
+
+## Key Operations
+
+As a key-value store, leveldb supports read and write. What is unique about leveldb is it supports versioning and snapshots.
+
+## Leveldb Read
+Given the physical layout, there can be duplicate keys appearing in different levels. The right semantics is reading the latest entry, i.e., Memtable > Immutable Memtable > L0 SSTable > L1 SSTable > ... > L7 SSTable.
+
+## Leveldb Write
+
+```C++
+// Default implementations of convenience methods that subclasses of DB
+// can call if they wish
+Status DB::Put(const WriteOptions& opt, const Slice& key, const Slice& value) {
+  WriteBatch batch;
+  batch.Put(key, value);
+  return Write(opt, &batch);
+}
+```
+
+### Compaction
 Merge the new data with existing old data in deeper levels.
 
 ## Compare with Other KV Store
 Snapshot is a very unique thing in leveldb.
 How to support a write-heavy use cases
-
-## Putting is All Together - Read & Write
 
 ## Snapshot
 Why providing snapshot operations? Consistent views of the data. Multi-reading to the same key yields the same results.
