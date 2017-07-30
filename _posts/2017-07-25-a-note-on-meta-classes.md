@@ -1,13 +1,14 @@
-On A Metaclasses Use Case
-
-metaclass is one of the black magics in Python. In this blog, I discusses two use cases for it.
+---
+layout: post
+title:  "On Metaclass Use Cases"
+date:   2017-07-25 20:49:03 -0800
+---
+Metaclass is one of the powerful black magics in Python. In this blog, I will discuss what it is, and illustrate its strength two interesting use cases.
 
 ## What is Metaclass?
-There is a very through [stackoverflow discussion](https://stackoverflow.com/a/6581949) regarding metaclass. Here I am giving a quick summary:
-
-Classes can create instances. What's more interesting is, classes are themselves instances of *metaclasses*.
-
-The *type* keyword is what makes the magic happens. It can be viewed as a metaclass, or a class factory. You can create classes by using this keyword. Here I steal some contents from the [stackoverflow discussion](https://stackoverflow.com/a/6581949):
+There is a very through [stackoverflow discussion](https://stackoverflow.com/a/6581949) regarding metaclass. Here I am giving a quick summary based on that.
+As is known to all, classes can create instances. But not so many people know that classes are themselves instances of *metaclasses*. 
+The metaclass, after all, is a class that creates other classes. *type* is the built-in metaclass, which you can use to create customized metaclasses. Here is the basic use of *type*:
 
 ```python
 # type usage:
@@ -26,13 +27,12 @@ The *type* keyword is what makes the magic happens. It can be viewed as a metacl
 <__main__.MyShinyClass object at 0x8997cec>
 ```
 
-The metaclass, after all, is a class that creates other classes. *type* is a built-in metaclass. You can create customized metaclass.
+As you can see, a class created with class keyword can be *equivalently* constructed with *type* keyword. *type* thus can be viewed as a class factory -- by passing different parameters, you create different classes with it. You can also customize with *type*:
 
 ```python
 class UpperAttrMetaclass(type): 
 
     def __new__(cls, clsname, bases, dct):
-
         uppercase_attr = {}
         for name, val in dct.items():
             if not name.startswith('__'):
@@ -43,20 +43,36 @@ class UpperAttrMetaclass(type):
         return super(UpperAttrMetaclass, cls).__new__(cls, clsname, bases, uppercase_attr)
 ```
 
-Classes are objects.
-You can create dynamic classes.
-metaclass is to create classes dynamically.
-everything is an object?
+UpperAttrMetaclass is a customized metaclass. For any class extending it, it converts all its methods to upper cases, as illustrated here:
+
+```python
+__metaclass__ = upper_attr # this will affect all classes in the module
+
+class Foo(): # global __metaclass__ won't work with "object" though
+  # but we can define __metaclass__ here instead to affect only this class
+  # and this will work with "object" children
+  bar = 'bip'
+
+print(hasattr(Foo, 'bar'))
+# Out: False
+print(hasattr(Foo, 'BAR'))
+# Out: True
+
+f = Foo()
+print(f.BAR)
+# Out: 'bip'
+```
+
+OK! With basic metaclass knowledge, let's study a couple of use cases.
 
 ## Use Case 1: Fake Type Proxy
-[freezegun](https://github.com/spulec/freezegun) allows the code the freeze the time. Once the decorator have been invoked, all calls to datetime.datetime.now(), datetime.datetime.utcnow(), datetime.date.today() will return the time that has been frozen. Under the hood, it uses metaclass to create a FakeDateTime that behaves like DateTime.
+[freezegun](https://github.com/spulec/freezegun) is a package that allows testing code to freeze (yay!) time. It provides a decorator. Once the decorator is invoked with a fixed time, all calls to datetime.datetime.now(), datetime.datetime.utcnow(), datetime.date.today() will return it. Under the hood, it utilizes metaclass to create a lightweight FakeDateTime class that behaves like DateTime. In a nutshell, freezegun builds FakeDatetime like this:
 
 ```python
 from freezegun import freeze_time
 import datetime
 
 
-# instancecheck magic
 def with_metaclass(meta, *bases):
     """Create a base class with a metaclass."""
     return meta("NewBase", bases, {})
@@ -67,6 +83,7 @@ class FakeDatetimeMeta(type):
     @classmethod
     def __instancecheck__(cls, obj):
         return isinstance(obj, real_datetime)
+
 
 real_datetime = datetime.datetime
 # Ignore timezone effect for simplicity.
@@ -106,18 +123,18 @@ class FakeDatetime(with_metaclass(FakeDatetimeMeta, real_datetime)):
         cls._times_to_freeze.pop()
 ```
 
-Basically, the code snippet builds a FakeDatetime class. It contains almost the same method interfaces as Datetime, except that each call will return a previously frozen date. I added the push_time and pop_time method to explicitly manage the stack FakeDatetime maintains. Basically, after you push a frozen time to the stack, the *now*, *utcnow* and *today* will all return the last pushed time.
+Basically, the code snippet builds a FakeDatetime class. It contains almost the same method interfaces as Datetime, except that each call will return a previously frozen date. I added the push_time and pop_time method to explicitly manage the _times_to_freeze stack, which is useful for nested usage.
 
-FakeDatetime is a thin wrapper which implements all the key methods. Metaclass is here to elegantly override the isinstance method. A datetime.datetime object will be considered as an instance of FakeDatetime.
+FakeDatetime is actually a thin wrapper implementing several key datetime class methods. Metaclass is here to elegantly override the *isinstance* method. With this override, datetime object will be considered an FakeDatetime instance when calling *isinstance*.
 
-So why is it implemented this way? Why cannot FakeDatetime just inherit datetime.datetime? It can, but then a lot more methods need to be overridden, and it is not as clean as the this metaclass approach. A similar discussion about isinstance override is [here](https://stackoverflow.com/questions/6803597/how-to-fake-type-with-python).
+So why is it implemented this way? Can FakeDatetime just extend datetime and automatically gain all methods of datetime? It can, but then a lot more methods need to be overridden, and it is not as clean as the this **thin wrapper + metaclass** approach.
 
-## Use Case 2: Class Validation
-In the book [Effective Python](), the author provides another interesting use case in **Item 34: Register class existence with Metaclass**. Imagine that you want to implement a customized JSON serializer/deserializer, and you want this to work for a set of classes. Basically, we want to implement two methods:
+## Use Case 2: Class Registration
+In the book [Effective Python](http://www.effectivepython.com/), the author provides another interesting use case in **Item 34: Register class existence with Metaclass**. Imagine you want to implement a customized JSON serializer/deserializer for a set of classes. Each class here is a data container, and the data is immutable since creation. For serializing, we only need to serialize the parameters passed to initialization. The deserializing method returns object rather than the parameters.
 
 ```python
-# Convert the params in JSON format.
-def serialize(params):
+# Convert the object params in JSON format.
+def serialize(object_params):
     pass
 
 # Build a object with the previously serialized data.
@@ -125,9 +142,7 @@ def deserialize(serialized_object):
     pass
 ```
 
-Modify class creation behaviors. During the class creation, you can register class, verify the parameters of the class and other things.
-
-Ideally, we want each class to have a method serialize() converting input params to a JSON blob. Also, we will have a global method that deserialize *any* JSON blob to the corresponding object. This means we must also attach the class information in the JSON blob. Note that all the code snippets are copied from the the Effective Python book
+We want each newly created class to have a instance method serialize() converting input parameterss to a JSON blob. Also, we will have a global method that deserialize *any* JSON blob to an object. Thus, we must attach class information in JSON blob.
 
 ```python
 class Vector3D(RegisteredSerializable):
@@ -142,7 +157,9 @@ print('Serialized:',    data)
 print('After:               ',  deserialize(data))
 ```
 
-Metaclass is thus introduced to conduct class registration at class creation time.
+How can we implement this serializer/deserializer? The major challenge here is automatically maintaining an *class_name: class* mapping so that later the deserializer can get the actual class details from the class names.
+
+Metaclass is introduced to achieve the above goal. It modifies class creation behaviors and conducts class registration during the creation. Deserializer can later correctly identify the actual class and construct the objects. Here is the code snippet:
 
 ```python
 registry = {}
@@ -182,4 +199,4 @@ class RegisteredSerializable(BetterSerializable, metaclass=Meta):
 ```
 
 ## Summary
-metaclass is the factory for classes. It is one of the deeply hidden Python dark magic, and should not be used in 99% of the scenarios. However, it can also be super powerful for certain problems. This blog introduces two of them. You can also find more use cases such as class validation and annotation in [this awesome book]().
+metaclass is the factory for building classes. It leverage the keyword *type* for all the magics. In fact, it is a deeply hidden dark magic, and should not be used in 99% of the scenarios. However, if used correctly, it can also be super powerful. This blog introduces two use cases. You can also find other uses such as class validation and annotation in [this awesome book](http://www.effectivepython.com/).
