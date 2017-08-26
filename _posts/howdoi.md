@@ -1,0 +1,169 @@
+---
+layout: post
+title:  "Howdoi Reading"
+date:   2017-08-25 19:59:03 -0800
+---
+This week I was re-reading [The Hitchhiker’s Guide to Python](http://docs.python-guide.org/en/latest/) from [Kenneth Reitz](https://www.kennethreitz.org/), and found that it provides a list of code repositories worth learning. Among them, [howdoi](https://github.com/gleitz/howdoi) caught my attention. It is a small repository with less than 1000 LOC and provides a simple repository structure worth following. On the other hand, it also implements a fun feature - search coding snippets with command line. Today I am going to share some thoughts when reading this repository.
+
+## Howdoi Use Cases
+``howdoi`` is a command line tool consulting stackoverflow to identify relevant code snippets for a given query. Here are a couple of cool examples:
+
+```python
+$ howdoi format date bash
+> DATE=`date +%Y-%m-%d`
+```
+
+and another one:
+
+```python
+$ howdoi create tar archive
+> tar -cf backup.tar --exclude "www/subf3" www
+```
+
+## Code Structure
+*howdoi* has a very simple code structure:
+
+```
+howdoi (module dir)
+    - __init__.py
+    - howdoi.py
+.flake8
+.travis.yml
+README.rst
+requirements.txt
+setup.py
+test_howdoi.py
+howdoi.rb
+```
+
+This structure is quite common - it puts module directory and ``requirements.txt`` in root directory. There is only a root level ``test_howdoi.py`` due to simplicity. One thing worth noting about the structure is, in Hitchhiker’s guide to Python book, it is recommended to use Makefile to automate generic tasks. 
+
+```makefile
+init:
+    pip install -r requirements.txt
+test:
+    py.test tests
+.PHONY: init test
+```
+
+## A Caveat: run code locally?
+After downloading the repository, directly run python howdoi/howdoi.py params will raise error like:
+
+```bash
+(py35) 08:01:44 ~/github/others/howdoi (master) $ python howdoi/howdoi.py  format date bash --all
+Traceback (most recent call last):
+  File "howdoi/howdoi.py", line 19, in <module>
+    from . import __version__
+SystemError: Parent module '' not loaded, cannot perform relative import
+(py35) 08:01:45 ~/github/others/howdoi (master) $ 
+```
+
+Relative importing can easily cause such issues. To resolve, use ``python -m``.
+
+```bash
+python -m howdoi.howdoi  format date bash --all
+```
+
+## The Internals
+The idea is simple. In a nutshell, ``command_line_runner`` gets all the options, and calls ``howdoi`` method to find relevant snippets.
+
+```python
+def howdoi(args):
+    args['query'] = ' '.join(args['query']).replace('?', '')
+    try:
+        # _get_instructions returns relevant code snippets.
+        return _get_instructions(args) or 'Sorry, couldn\'t find any help with that topic\n'
+    except (ConnectionError, SSLError):
+        return 'Failed to establish network connection\n'
+
+def command_line_runner():
+    parser = get_parser()
+    # Convert params to dictionary.
+    args = vars(parser.parse_args())
+    if sys.version < '3':
+        print(howdoi(args).encode('utf-8', 'ignore'))
+    else:
+        print(howdoi(args))
+```
+
+``_get_instructions`` does the real job. It first gets a set of links via Google search on the query, and then crawl the links followed by code snippets extraction. ``PyQuery`` is used for extracting the html contents. As a side note, it works much faster than BeautifulSoup.
+
+```python
+SEARCH_URL = 'https://www.google.com/search?q=site:{0}%20{1}'
+URL = os.getenv('HOWDOI_URL') or 'stackoverflow.com'
+
+def _get_instructions(args):
+    # _get_result sends request to Google and return a bunch of stackoverflow links.
+    links = _get_links(args['query'])
+
+    if not links:
+        return False
+    answers = []
+    append_header = args['num_answers'] > 1
+    initial_position = args['pos']
+    for answer_number in range(args['num_answers']):
+        current_position = answer_number + initial_position
+        # pos controls the index of the link we are interested in.
+        args['pos'] = current_position
+        answer = _get_answer(args, links)
+        if not answer:
+            continue
+        if append_header:
+            answer = ANSWER_HEADER.format(current_position, answer)
+        answer += '\n'
+        answers.append(answer)
+    return '\n'.join(answers)
+
+def _get_answer(args, links):
+    links = _get_questions(links)
+    link = get_link_at_pos(links, args['pos'])
+    if not link:
+        return False
+    if args.get('link'):
+        return link
+    page = _get_result(link + '?answertab=votes')
+    html = pq(page)
+
+    # Identify code snippet as answers.
+    first_answer = html('.answer').eq(0)
+    instructions = first_answer.find('pre') or first_answer.find('code')
+    args['tags'] = [t.text for t in html('.post-tag')]
+
+    if not instructions and not args['all']:
+        text = first_answer.find('.post-text').eq(0).text()
+    elif args['all']:
+        texts = []
+        for html_tag in first_answer.items('.post-text > *'):
+            current_text = html_tag.text()
+            if current_text:
+                if html_tag[0].tag in ['pre', 'code']:
+                    texts.append(_format_output(current_text, args))
+                else:
+                    texts.append(current_text)
+        texts.append('\n---\nAnswer from {0}'.format(link))
+        text = '\n'.join(texts)
+    else:
+        text = _format_output(instructions.eq(0).text(), args)
+    if text is None:
+        text = NO_ANSWER_MSG
+    text = text.strip()
+    return text
+```
+
+## Packaging
+Let's talk a bit more about the packaging with  ``setup.py``. This file provides important information for installing and understanding the repository. The *entry_points* provides an easy way to start reading the code.
+
+```python
+    entry_points={
+        'console_scripts': [
+            'howdoi = howdoi.howdoi:command_line_runner',
+        ]
+    },
+```
+
+## Takeaways
+
+1. ``howdoi`` serves as a template to follow when creating small packages.
+2. Use _single_underscore_method to indicate methods only for internal use. When a from howdoi import * is called, the _single_underscore methods are not imported.
+3. PyQuery package is pretty powerful - Jquery syntax, also much faster than counterpart BeautifulSoup.
+4. Running repository locally with `-m` to bypass local import issues.
