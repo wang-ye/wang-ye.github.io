@@ -4,7 +4,7 @@ title:  "Maintaining Free ProxyPool For Web Crawling"
 date:   2017-09-01 19:59:03 -0800
 ---
 
-To crawl the website effectively, proxies are often used. Today, I will discuss a [github repository](https://github.com/jhao104/proxy_pool) that maintains a *free* proxy pool for crawling purposes. Here is an example use of the proxy pool, assuming that a ProxyPool Flask App is running on localhost:5000.
+Proxies are often used when crawling the website. In this post, I will discuss [ProxyPool](https://github.com/jhao104/proxy_pool), a Git repository that maintains a *free* proxy pool for crawling Chinese websites. It provides a simple Flask interface, so spiders can get the usable proxies by accessing *localhost:5000*.
 
 ```python
 import requests
@@ -16,14 +16,19 @@ def get_proxy():
 # your spider code
 def spider():
     # ....
-    requests.get('https://www.example.com', proxies={"http": "http://{}".format(get_proxy())})
+    requests.get('https://www.example.com', 
+        proxies={"http": "http://{}".format(get_proxy())})
     # ....
 ```
 
-# Proxy Pool Design
-Here is the diagram for proxyPool design.
+We will first talk about its high-level design. Next, we dive into some implementation details such as proxy discovery and verification.
 
-(https://camo.githubusercontent.com/583fcc7cd62289814f86f52a0152835b11802979/68747470733a2f2f706963322e7a68696d672e636f6d2f76322d66323735366461323938366161386138636162316639353632613131356235355f622e706e67)
+# ProxyPool Design
+The Github already has the proxyPool diagram.
+
+![]({{ site.url }}/assets/proxy-pool.png)
+
+The intended users of the proxy pool is the *spiders (crawlers)*. They talk directly ProxyPool API and gets the available proxies. ProxyPool runs several background jobs to schedule the proxy crawling from several websites providing free proxies.
 
 It contains several components:
 
@@ -32,10 +37,16 @@ It contains several components:
 * Schedulers: Run multiple threads together to retrieve, update and validate proxies. Also, it deletes unusable ones.
 * ProxyGetter: The library to retrieve proxies from free websites.
 
-The design is a clean and straightforward. The code is also easy to follow, but it is worth pointing out a couple of interesting pieces:
+The design is clean and straightforward. As to the actual implementation, it is worth pointing out a couple of interesting pieces.
+
+## Implementation Decisions
+In this section,, we will discuss key implementation decisions.
+
+## Flask App
+The App provides APIs to get usable proxies and remove stable proxy. I will skip this part and interested readers can check the [source](https://github.com/jhao104/proxy_pool/blob/master/Api/ProxyApi.py) directly.
 
 # Background Job Scheduling
-Instead of having heavyweight celery jobs for scheduling crawlers and removing stale proxies, it uses a multi-process approach.
+ProxyPool schedules periodical jobs such as proxy crawling and removing stale proxies. Instead of relying a heavyweight celery scheduling approach, it uses a multi-processes approach.
 
 ```python
 # The main.py
@@ -55,24 +66,23 @@ def run():
         p.join()
 ```
 
-Among the three processes, *ProxyApiRun* supports the Flask app to interact with crawlers; *RefreshRun* crawls the websites containing free proxies and store them locally, while *ValidRun* validates the proxies by applying them for the following crawling task:
+Among the three processes, *ProxyApiRun* supports the Flask app to interact with crawlers; *RefreshRun* crawls the websites containing free proxies and store newly-emerged proxies locally in DB, while *ValidRun* validates the proxies with the following approach:
 
 ```python
-# proxy var is the proxy we want to verify.
-proxies = {"https": "https://{proxy}".format(proxy=proxy)}
+def validUsefulProxy(proxy):
+    # proxy var is the proxy we want to verify.
+    proxies = {"https": "https://{proxy}".format(proxy=proxy)}
 
-r = requests.get(
-        'https://www.baidu.com', proxies=proxies, timeout=40, verify=False)
-if r.status_code == 200:
-    logger.debug('%s is ok' % proxy)
-    ..
+    r = requests.get(
+            'https://www.baidu.com', proxies=proxies, timeout=40, verify=False)
+    if r.status_code == 200:
+        logger.debug('%s is ok' % proxy)
+        return True
+    return False
 ```
 
-## Flask App
-The app provides melthods to get usable proxies and remove a proxy if it is no longer available. Interested readers can check the source directly.
-
-## The Factory Pattern for Choosing DB
-ProxyPool provides different DB clients for Mongodb, Redis and [SSDB](). User dictates which DB to use in configuration.
+## Choosing the Right DB
+ProxyPool supports different DB backends such as Mongodb, Redis and [SSDB](https://github.com/ideawu/ssdb). User dictates which DB to use in configuration. ProxyPool utilizes the factory pattern for choosing the right DB.
 
 ```python
 class Singleton(type):
@@ -88,6 +98,7 @@ class Singleton(type):
             cls._inst[cls] = super(Singleton, cls).__call__(*args)
         return cls._inst[cls]
 
+# metaclass here uses Py3 syntax.
 class DBClient(object, metaclass=Singleton):
     def __init__(self):
         self.config = GetConfig()
@@ -102,17 +113,33 @@ class DBClient(object, metaclass=Singleton):
         else:
             pass
         assert __type, 'type error, Not support DB type: {}'.format(self.config.db_type)
-        self.client = getattr(__import__(__type), __type)(name=self.config.db_name,
-                                                          host=self.config.db_host,
-                                                          port=self.config.db_port)
+        self.client = getattr(__import__(__type), __type)(
+            name=self.config.db_name,
+            host=self.config.db_host,
+            port=self.config.db_port
+        )
     ...
 ```
 
 DBClient is a client factory. It maintains a *client*, and it is set based on config. Also, it is implemented as a singleton with the help of metaclass.
 Why making it a Singleton? DBClient caches the connection and potentially minimizes the number of connections to DB.
 
+A different way of factory pattern: https://github.com/gennad/Design-Patterns-in-Python/blob/master/factory.py
+
 ## Get Proxies
-The basic idea is crawling the websites that provide free proxies. Users can specify which websites to crawl in the config.
+ProxyPool gets the free proxies by crawling the websites that provide free proxies. Users can specify which websites to crawl in the config. In config, you will find something like this:
+
+```ini
+[ProxyGetter]
+;register the proxy getter function
+freeProxyFirst  = 1
+freeProxySecond = 1
+freeProxyThird  = 1
+freeProxyFourth = 1
+freeProxyFifth  = 1
+```
+
+Each of the *freeXXX* is defined as a static method in GetFreeProxy class:
 
 ```python
 class GetFreeProxy(object):
@@ -142,19 +169,7 @@ class GetFreeProxy(object):
             yield proxy
 ```
 
-It defines different methods to crawl different proxy sites. In config, register it as
-
-```ini
-[ProxyGetter]
-;register the proxy getter function
-freeProxyFirst  = 1
-freeProxySecond = 1
-freeProxyThird  = 1
-freeProxyFourth = 1
-freeProxyFifth  = 1
-```
-
-Actual crawling happens like this:
+Actual usage happens like this:
 
 ```python
 class ProxyManager(object):
@@ -169,7 +184,6 @@ class ProxyManager(object):
             # fetch raw proxy
             for proxy in getattr(GetFreeProxy, proxyGetter.strip())():
                 if proxy.strip():
-                    self.log.info('{func}: fetch proxy {proxy}'.format(func=proxyGetter, proxy=proxy))
                     proxy_set.add(proxy.strip())
 
             # store raw proxy
@@ -178,22 +192,16 @@ class ProxyManager(object):
                 self.db.put(proxy)
 ```
 
-## Scheduler
-Multi-threading scheduler with apscheduler
-### Refresh
-Every few minutes, a scheduled job goes through
-### Validate
-Gets 
+The code applies *getattr* method to dynamically extract the website to crawl.
+More specifically, the statement ``getattr(GetFreeProxy, proxyGetter.strip())()`` actually calls GetFreeProxy's methods as defined in *ini* file.
 
+### Proxy Refresh and Validation 
+Free proxies expire very fast. Thus, ProxyPool also provides some mechanism to detect new proxies and remove stale ones.
+
+For identifying new proxies:
 
 ## Testing
-All tests lie in *Test* directory. One final note about how to run the tests.
-
-```shell
-$ python -m Test.testLogHandler
-```
-
-Directly running the test files will casue import errors.
+All tests lie in *Test* directory. One final note about how to run the tests. Directly running the test files will cause import errors:
 
 ```shell
 $ python -m Test/testLogHandler.py
@@ -203,7 +211,9 @@ Traceback (most recent call last):
 ImportError: No module named Util.LogHandler
 ```
 
-## Takeaway
-What can we learn from this design?
+Running it with `-m` will make sure everything is working:
 
-A use case for factory and singleton pattern.
+```shell
+$ python -m Test.testLogHandler
+```
+
