@@ -4,7 +4,7 @@ title:  "Maintaining Free ProxyPool For Web Crawling"
 date:   2017-09-01 19:59:03 -0800
 ---
 
-Proxies are often used when crawling the website. In this post, I will discuss [ProxyPool](https://github.com/jhao104/proxy_pool), a Git repository that maintains a *free* proxy pool for crawling Chinese websites. It provides a simple Flask interface, so spiders can get the usable proxies by accessing *localhost:5000*.
+Proxies are often used when crawling the website. In this post, I will discuss [ProxyPool](https://github.com/jhao104/proxy_pool), a Git repository that maintains a *free* proxy pool for crawling Chinese websites. It provides a simple Flask interface, and spiders can get the usable proxies by accessing *localhost:5000*.
 
 ```python
 import requests
@@ -21,32 +21,30 @@ def spider():
     # ....
 ```
 
-We will first talk about its high-level design. Next, we dive into some implementation details such as proxy discovery and verification.
+In this post, I will first talk about its high-level design, and later dive into implementation details such as proxy discovery and verification.
 
-# ProxyPool Design
-The Github already has the proxyPool diagram.
+## ProxyPool Design
+The Github [repository](https://github.com/jhao104/proxy_pool) already has a nice proxyPool diagram, which I copied shamelessly here:
 
 ![]({{ site.url }}/assets/proxy-pool.png)
 
-The intended users of the proxy pool is the *spiders (crawlers)*. They talk directly ProxyPool API and gets the available proxies. ProxyPool runs several background jobs to schedule the proxy crawling from several websites providing free proxies.
-
-It contains several components:
+The intended users of the proxy pool are *spiders (crawlers)*. They interact directly via ProxyPool API and gets the available proxies. ProxyPool runs several background jobs to schedule the proxy crawling from several websites providing free proxies. ProxyPool contains four key components:
 
 * API: end users (crawlers) talks with ProxyPool through this API.
 * DB: Store the usable proxies. It provides APIs to read/delete/write proxies.
 * Schedulers: Run multiple threads together to retrieve, update and validate proxies. Also, it deletes unusable ones.
 * ProxyGetter: The library to retrieve proxies from free websites.
 
-The design is clean and straightforward. As to the actual implementation, it is worth pointing out a couple of interesting pieces.
+This design is clean and straightforward.
 
 ## Implementation Decisions
-In this section,, we will discuss key implementation decisions.
+In this section, I dissect the implementation details such as job scheduling, building a DB factory, and proxy discovery and validation.
 
-## Flask App
+### Flask App
 The App provides APIs to get usable proxies and remove stable proxy. I will skip this part and interested readers can check the [source](https://github.com/jhao104/proxy_pool/blob/master/Api/ProxyApi.py) directly.
 
-# Background Job Scheduling
-ProxyPool schedules periodical jobs such as proxy crawling and removing stale proxies. Instead of relying a heavyweight celery scheduling approach, it uses a multi-processes approach.
+### Background Job Scheduling
+ProxyPool schedules periodical jobs such as *proxy crawling* and *removing stale proxies*. Instead of relying a heavyweight celery scheduling approach, it uses a simple multi-processes approach.
 
 ```python
 # The main.py
@@ -81,7 +79,7 @@ def validUsefulProxy(proxy):
     return False
 ```
 
-## Choosing the Right DB
+### Choosing the Right DB
 ProxyPool supports different DB backends such as Mongodb, Redis and [SSDB](https://github.com/ideawu/ssdb). User dictates which DB to use in configuration. ProxyPool utilizes the factory pattern for choosing the right DB.
 
 ```python
@@ -122,11 +120,11 @@ class DBClient(object, metaclass=Singleton):
 ```
 
 DBClient is a client factory. It maintains a *client*, and it is set based on config. Also, it is implemented as a singleton with the help of metaclass.
-Why making it a Singleton? DBClient caches the connection and potentially minimizes the number of connections to DB.
+Why making it a Singleton? One reason is DBClient caches the connection and potentially minimizes the number of connections to DB. 
 
-A different way of factory pattern: https://github.com/gennad/Design-Patterns-in-Python/blob/master/factory.py
+Regarding Factory pattern, here is [another way](https://github.com/gennad/Design-Patterns-in-Python/blob/master/factory.py) of implementing it.
 
-## Get Proxies
+### Get Proxies
 ProxyPool gets the free proxies by crawling the websites that provide free proxies. Users can specify which websites to crawl in the config. In config, you will find something like this:
 
 ```ini
@@ -195,13 +193,16 @@ class ProxyManager(object):
 The code applies *getattr* method to dynamically extract the website to crawl.
 More specifically, the statement ``getattr(GetFreeProxy, proxyGetter.strip())()`` actually calls GetFreeProxy's methods as defined in *ini* file.
 
-### Proxy Refresh and Validation 
+### Proxy Validation 
 Free proxies expire very fast. Thus, ProxyPool also provides some mechanism to detect new proxies and remove stale ones.
 
-For identifying new proxies:
+For validating newly-discovered proxies:
+It stores all the new proxies in ``raw_proxy_queue``. Then, ``ProxyRefreshSchedule#validProxy`` will test each proxy and move the usable ones to ``useful_proxy_queue``.
 
-## Testing
-All tests lie in *Test* directory. One final note about how to run the tests. Directly running the test files will cause import errors:
+There is another another validation happening inside ``ProxyValidSchedule``. It validates the proxies in ``useful_proxy_queue``. All the validation codes happen inside ``Schedule`` module.
+
+## Running Tests
+All tests lie in *Test* directory. Directly running the test files will cause import errors:
 
 ```shell
 $ python -m Test/testLogHandler.py
@@ -216,4 +217,3 @@ Running it with `-m` will make sure everything is working:
 ```shell
 $ python -m Test.testLogHandler
 ```
-
