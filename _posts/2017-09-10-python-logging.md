@@ -3,7 +3,7 @@ layout: post
 title:  "Python Logging Tips"
 date:   2017-09-10 19:59:03 -0800
 ---
-In this log, I want to summarize some Python logging tips.
+I want to summarize some Python logging basics and useful tips in this blog.
 
 ## No Printing
 Use logging rather than *print* method. You can always redirect your logger to stdout via StreamHandler while debugging.
@@ -54,6 +54,5 @@ Also, note that sometimes you need to set disable_existing_loggers to False. You
 ## Library Logging
 In [The Hitchhiker’s Guide to Python](http://docs.python-guide.org/en/latest/) , It is strongly advised that you do not add any handlers other than NullHandler in your library’s loggers.
 
-## How to Disable Logging For a Lib
+## Disabling Logging For a Lib
 Here is a [simple trick](https://stackoverflow.com/questions/11029717/how-do-i-disable-log-messages-from-the-requests-library ) to disable lib warnings.
-
