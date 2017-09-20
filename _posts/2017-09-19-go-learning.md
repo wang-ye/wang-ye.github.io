@@ -1,15 +1,14 @@
 ---
 layout: post
 title:  "Start Go Learning"
-date:   2017-08-25 19:59:03 -0800
+date:   2017-09-19 19:59:03 -0800
 ---
 
 As a 2017 New Year resolution, I planned to get familiar with [Golang](). This week I finally started my Go journey!
+Instead of reading the syntaxes, I jumped into something a bit more interesting - [Go by Examples](www.gobyexample.com). In this blog, I want to talk about some initial thoughts on learning Go. For me, it seems like an enhancement of C language with concurrency in mind. It also shares some of the designs from Python. Some of the most surprising features to me are:
 
-Instead of reading the syntax one by one, I jumped into something a bit more interesting - [Go by Examples](www.gobyexample.com). In this blog, I want to talk about some initial feelings when learning Go. For me, it seems like an enhancement of C language with concurrency in mind. It also shares some of the designs from Python. Some of the most surprising features to me are:
-
-## Go routines and Channels
-It arguably is the most powerful feature in Go. As an example from *Go By Examples*:
+## Go Routines and Channels
+Arguably, Go's most powerful features are routines and channels. Here is an example from the tutorial *Go By Examples*:
 
 ```go
 // From https://gobyexample.com/channels
@@ -25,10 +24,10 @@ func main() {
 }
 ```
 
-Go routines and channels provide a concurrency model using the channel abstraction.
+Go routines and channels provide an easy way to coordinate processes and pass messages among processes.
 
 ## Defer
-One big step to make sure we clean up properly. Go advocates a pattern to free resources immediately after resource allocation.
+*Defer* is a big step to make sure we clean up properly. Go advocates a pattern to free resources immediately after resource allocation.
 
 ```go 
 package main
@@ -40,8 +39,8 @@ func main() {
 }
 ```
 
-3. Confusing Command Line Parsing
-I am really confused when reading the command line parsing for Go. As an example:
+## Confusing Command Line Parsing
+I was really confused about Go's command line parsing. Here is an example: 
 
 ```go 
 // From https://play.golang.org/p/NASEOq2R3n
@@ -54,7 +53,7 @@ func main() {
 }
 ```
 
-The above code looks so magical to me - what does *flag.Parse()* do? What is *wordPtr*? It turned out it does tons of things in the background. Inside the *flag* package, a variable called CommandLine is created and holds all the flags.
+The above code looks so magical to me - what does *flag.Parse()* do? and what is *wordPtr*? After some digging, it turned out Go does tons of things in the background. Inside the *flag* package, a variable called CommandLine is first created to hold all flags.
 
 ```go
 // A FlagSet represents a set of defined flags. The zero value of a FlagSet
@@ -73,10 +72,22 @@ type FlagSet struct {
     errorHandling ErrorHandling
     output        io.Writer // nil means stderr; use out() accessor
 }
+
+// NewFlagSet returns a new, empty flag set with the specified name and
+// error handling property.
+func NewFlagSet(name string, errorHandling ErrorHandling) *FlagSet {
+    f := &FlagSet{
+        name:          name,
+        errorHandling: errorHandling,
+    }
+    // ...
+    return f
+}
+
 var CommandLine = NewFlagSet(os.Args[0], ExitOnError)
 ```
 
-When ``String`` method is called, a flag is created. *CommandLine* now knows what to expect when parsing the arguments.
+When ``flag.String`` is called, a flag is created and persisted in *CommandLine*. Now *CommandLine* knows what to expect when parsing the arguments.
 
 ```go 
 // String defines a string flag with specified name, default value, and usage string.
@@ -120,7 +131,7 @@ func (f *FlagSet) Var(value Value, name string, usage string) {
 }
 ```
 
-The real magic is the *Parse* method. It utilizes *os* package to get all the command line arguments, and parse them one by one and store them inside CommandLine.
+The real magic is the *Parse* method. It utilizes *os* package to get all the command line arguments, parse them one by one and store them inside CommandLine.
 
 ```go 
 // Parse parses flag definitions from the argument list, which should not
@@ -150,17 +161,6 @@ func (f *FlagSet) Parse(arguments []string) error {
     return nil
 }
 
-// NewFlagSet returns a new, empty flag set with the specified name and
-// error handling property.
-func NewFlagSet(name string, errorHandling ErrorHandling) *FlagSet {
-    f := &FlagSet{
-        name:          name,
-        errorHandling: errorHandling,
-    }
-    f.Usage = f.defaultUsage
-    return f
-}
-
 // Inside package flag
 // Parse parses the command-line flags from os.Args[1:].  Must be called
 // after all flags are defined and before flags are accessed by the program.
@@ -171,7 +171,7 @@ func Parse() {
 ```
 
 ## Ticker: What is Python equivalent?
-I am thinking about the Python equivalent of Go's ticker utility. Here is one way to simulate the ticker in Python that uses Queue for message passing.
+I am thinking about the Python equivalent of Go's ticker utility. Here is one way to simulate the ticker in Python that uses Queue:
 
 ```python
 # package main
@@ -234,4 +234,4 @@ def main():
 ```
 
 ## Thoughts
-Go has the origin of 
+Go has powerful features to simplify concurrency. It is time to learn it!
