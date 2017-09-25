@@ -2,6 +2,89 @@ tinychain part 2
 
 Very high quality code.
 
+
+## Tinychain Client
+A tinychain client supports three operations.
+
+```python
+# client.py
+def main():
+   ...
+   if args['balance']:
+        get_balance(args)
+    elif args['send']:
+        send_value(args)
+    elif args['status']:
+        txn_status(args)
+```
+
+For the sake of space, I will only discuss the most important send_value method. Imagine you have 10 tinycoins, and you want to send 1 tinycoin to Jack, then send_value method would be triggered:
+
+Here is another important concept: like your wealth can be represented by multiple valid checks, in tinycoin your total number of coins are represented by *Unspent Transaction Output*. To send coin to other people, the client would first query available UTXOS in the chains, and then create a transaction to 
+
+```python
+def send_value(args: dict):
+    """Send value to some address."""
+    val, to_addr, sk = int(args['<val>']), args['<addr>'], args['signing_key']
+    selected = set()
+    my_coins = list(sorted(
+        find_utxos_for_address(args), key=lambda i: (i.value, i.height)))
+
+    for coin in my_coins:
+        selected.add(coin)
+        if sum(i.value for i in selected) > val:
+            break
+
+    txout = t.TxOut(value=val, to_address=to_addr)
+
+    txn = t.Transaction(
+        txins=[make_txin(sk, coin.outpoint, txout) for coin in selected],
+        txouts=[txout])
+
+    logger.info(f'built txn {txn}')
+    logger.info(f'broadcasting txn {txn.id}')
+    send_msg(txn)
+
+# Communicate with miners using Socket.
+def send_msg(data: bytes, node_hostname=None, port=None):
+    node_hostname = getattr(send_msg, 'node_hostname', 'localhost')
+    port = getattr(send_msg, 'port', 9999)
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((node_hostname, port))
+        s.sendall(t.encode_socket_data(data))
+        return t.read_all_from_socket(s)
+```
+
+### Running Servers With Docker
+Here is the ``docker`` file:
+
+```dockerfile
+FROM python:3.6.2
+ADD requirements.txt ./
+RUN pip install -r requirements.txt
+ADD tinychain.py ./
+
+CMD ["./tinychain.py", "serve"]
+```
+
+and the ``docker-compose.yaml``:
+```
+version: "3"
+services:
+  node1:
+    build: .
+    image: tinychain
+    ports:
+      - "9999:9999"
+  node2:
+    image: tinychain
+    environment:
+      TC_PEERS: 'node1'
+```
+
+
+
 ## Life of Transaction
 So, what is a transaction? 
 
@@ -55,9 +138,6 @@ class Transaction(NamedTuple):
 
 Suppose Jack already has 10 Bitcoins. Now, he wants to transfer 1 Bitcoin to Bob. How does the code work?
 
-## Mining and Blocks
-What is Proof of Work
-
 ## Balance Inquiry
 client.get_balance
 coinbase transaction: the transaction to send miner fees
@@ -67,3 +147,9 @@ coinbase transaction: the transaction to send miner fees
 ## Merkle Node?
 
 select_from_mempool
+
+How to avoid double spending?
+https://www.pandastrike.com/posts/20150429-understanding-bitcoin
+
+## Script
+pay-to-pubkey
