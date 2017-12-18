@@ -18,6 +18,18 @@ def main():
         txn_status(args)
 ```
 
+How to check transaction status? What does it mean?
+
+For get_balance method, socket, calls  
+
+```python
+def find_utxos_for_address(args: dict):
+    # utxo_set contains ALL unspent transactions.
+    utxo_set = dict(send_msg(t.GetUTXOsMsg()))
+    # Filter by the user's address to get the balance for the user only.
+    return [u for u in utxo_set.values() if u.to_address == args['my_addr']]
+```
+
 For the sake of space, I will only discuss the most important send_value method. Imagine you have 10 tinycoins, and you want to send 1 tinycoin to Jack, then send_value method would be triggered:
 
 Here is another important concept: like your wealth can be represented by multiple valid checks, in tinycoin your total number of coins are represented by *Unspent Transaction Output*. To send coin to other people, the client would first query available UTXOS in the chains, and then create a transaction to 
@@ -55,6 +67,16 @@ def send_msg(data: bytes, node_hostname=None, port=None):
         s.sendall(t.encode_socket_data(data))
         return t.read_all_from_socket(s)
 ```
+
+
+The "coinbase transaction" is the transaction inside a block that pays the miner his block reward. Each block starts with a coinbase transaction.
+
+
+How do we form block? - miner assembles transactions to form a block.
+
+How do we validate a transaction is valid?
+A -> B some money, how do we know the transaction is initiated by A?
+Transaction validation
 
 ### Running Servers With Docker
 Here is the ``docker`` file:
@@ -141,6 +163,7 @@ Suppose Jack already has 10 Bitcoins. Now, he wants to transfer 1 Bitcoin to Bob
 ## Balance Inquiry
 client.get_balance
 coinbase transaction: the transaction to send miner fees
+
 
 ## Working with Orphan Branches?
 
