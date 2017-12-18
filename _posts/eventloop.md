@@ -55,7 +55,7 @@ The whole event loop relies on the [*select* call](https://docs.python.org/3/lib
 
 The select module relies on OS specific implementations. For Linux, the man page shows the following:
 
-> select allows a program to monitor multiple file descriptors, waiting until one or more of the file descriptors become "ready" for some class of I/O operation (e.g., input possible).  A file descriptor is considered ready if it is possible to perform a corresponding I/O operation (e.g., read(2) without blocking, or a sufficiently small write(2)).
+>select allows a program to monitor multiple file descriptors, waiting until one or more of the file descriptors become "ready" for some class of I/O operation (e.g., input possible).  A file descriptor is considered ready if it is possible to perform a corresponding I/O operation (e.g., read(2) without blocking, or a sufficiently small write(2)).
 
 So in short, the *select* method monitors the state of multiple file descriptors. It is blocking call and returns descriptors in *ready* state. The following example illustrates event-looped based UDP servers.
 
