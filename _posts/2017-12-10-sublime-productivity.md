@@ -12,6 +12,7 @@ Visiting places fast!
 
 ### Syntax-specific Indention Settings
 **What**: Say you want to indent Python files with 4 spaces. 
+
 **How**: Open *Command Palatte* (ctr+shift+p in Linux), and type "setting syntax", and then edit the syntax JSON.
 
 ```json
