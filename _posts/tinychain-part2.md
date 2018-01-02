@@ -2,7 +2,6 @@ tinychain part 2
 
 Very high quality code.
 
-
 ## Tinychain Client
 A tinychain client supports three operations.
 
@@ -176,3 +175,13 @@ https://www.pandastrike.com/posts/20150429-understanding-bitcoin
 
 ## Script
 pay-to-pubkey
+
+
+## Docker Basics
+It uses a docker command.
+Image vs container difference. A running instance of an image is a container.
+docker inspect to return low level info
+
+
+## IBD
+Initial block download
