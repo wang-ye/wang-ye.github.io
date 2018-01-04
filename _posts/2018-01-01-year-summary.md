@@ -36,6 +36,7 @@ In 2018 I will focus on three aspects - learning, reading and lifestyle. I Will 
 * More coding projects: golang, JS
 * Learn more on blockchain technologies
 * 2 Coursera courses
+* Pair programming and debugging is very good learning strategy. Try to have one or two sessions each week about pair working.
 
 ### Reading
 
@@ -46,3 +47,10 @@ In 2018 I will focus on three aspects - learning, reading and lifestyle. I Will 
 
 * Lose ~12 pounds in 2 months with more healthy diet and swimming
 * More time with wife and family. I want to create more MOMENTS and HIGHLIGHTS. Will plan four formal dinners. More details come later.
+
+### New Habits to develop
+
+* I want to learn one new thing every day - something I never tried before or heard of. I can be food, drinks, knowledge, person, places ....
+* Daily reflection: 3 minute summary of planning and activities every day
+* Habits to be a better developer?
+* Set up weekly and monthly milestones to review the goals and activities.
