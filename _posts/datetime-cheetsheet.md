@@ -1,14 +1,14 @@
-Recently I worked on a project involving lots of datetime conversion and comparisons. Here is a cheetsheet for some of the common datetime tasks.
+Recently I worked on a project involving lots of datetime conversion and comparisons. This is error-prone, so I created a cheetsheet to cover the common datetime tasks.
 
-## General Concepts
+## General Principles
 
-### Do Not Use Time for Timezone Transformations
+### Do Not Use Time Package for Timezone Transformations
 It is very error-prone. Use Datetime and pytz packages instead.
 
 ### Timezone Awareness
-Python’s datetime.datetime objects have a tzinfo attribute. It stores time zone information, in the form of datetime.tzinfo subclass instance. When this attribute is set and describes an offset, a datetime object is aware. Otherwise, it’s naive.
+Python’s datetime.datetime objects have a tzinfo attribute. It stores time zone information with a `datetime.tzinfo` subclass instance. When this attribute is set, a datetime object is called `aware`. Otherwise, it’s `naive`.
 
-datetime.datetime.now(), without providing the tz attribute, is a native datetime. It shows the current local date and time. If your servers are running in multiple timezones, the datetime.now() can cause confusions.
+`datetime.datetime.now()`, without providing the tz attribute, is a native datetime. It shows the current local date and time. If your servers are running in multiple timezones, the datetime.now() can cause confusions.
 
 If timezone conversion is needed, making all datetime *aware* is a good option. This makes the transformation simpler.
 
@@ -20,11 +20,17 @@ If timezone conversion is needed, making all datetime *aware* is a good option. 
 datetime.datetime.now()
 # Current time in UTC representation, but still without tzinfo
 datetime.datetime.utcnow()
+# Current time in UTC representation, with tzinfo
 datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
 ```
 
 ### Get Local Timezone
-datetime + pytz
+The `tzlocal` package can do the trick.
+
+```python
+from tzlocal import get_localzone
+local_tz = get_localzone()
+```
 
 ### Get Epoch (Timestamp)
 
@@ -36,12 +42,24 @@ print(utc_timestamp(datetime.datetime.now()))
 ```
 
 ### Get Date of a Datetime
+This is simple, just call `date`!
 
-Datetime
+```python
+datetime.now().date()
+```
 
-### Parse a Datetime string
-2018-01-22T11:34:16.84196Z
-utc = datetime.datetime.strptime(ts, '%Y-%m-%dT%H:%M:%S.%fZ')
+### Convert Between Different Timezones
+```python
+# Convert utc_ts to pdt_ts
+def to_pdt_time(utc_ts):
+    from_zone = pytz.utc
+    to_zone = pytz.timezone('US/Pacific')
+    pdt_ts = utc_ts.replace(tzinfo=from_zone).astimezone(to_zone)
+    return pdt_ts
+```
+
+### String To Aware Datetime
+We use `strptime` for this conversion.
 
 ```python
 >>> from datetime import datetime
@@ -50,18 +68,14 @@ datetime.datetime(2009, 5, 13, 19, 19, 30,
                   tzinfo=datetime.timezone(datetime.timedelta(-1, 72000)))
 ```
 
-### Convert Between Different Timezones
+### Datetime To String
+We use `strftime` for this conversion.
+
 ```python
-def to_pdt_time(ts):
-    """Only return side, amount, price and ts."""
-    from_zone = pytz.utc
-    to_zone = pytz.timezone('US/Pacific')
-    utc = datetime.datetime.strptime(ts, '%Y-%m-%dT%H:%M:%S.%fZ')
-    pdt = utc.replace(tzinfo=from_zone).astimezone(to_zone)
-    return pdt
+from datetime import datetime
+current_time = datetime.now()
+print(current_time.strftime("%m/%d %H:%M:%S"))
 ```
 
-### Output Timezone As String
-return pdt.strftime("%m/%d %H:%M:%S")
-
 ## Summary
+This post covers some common datetime/timezone conversion snippets. Datetime handling can be confusing and error-prone, so use the right approach!
