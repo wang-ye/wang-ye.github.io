@@ -1,9 +1,13 @@
-tinychain part 2
+---
+layout: post
+title: "Tinychain Part Two"
+date:   2018-01-10 19:40:01 -0800
+---
 
-Very high quality code.
+We previously posted about Tinychain. There are still some unresolved questions. What is a client? What is a transaction, and how can we assemble the blocks?
 
 ## Tinychain Client
-A tinychain client supports three operations.
+A tinychain client is a utility that interacts with the tinychain on behalf of a given user. It supports three operations:
 
 ```python
 # client.py
