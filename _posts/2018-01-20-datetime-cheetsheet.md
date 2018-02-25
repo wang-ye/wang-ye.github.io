@@ -13,6 +13,8 @@ Python’s datetime.datetime objects have a tzinfo attribute. It stores time zon
 If timezone conversion is needed, making all datetime *aware* is a good option. This makes the transformation simpler.
 
 ## Code Snippets
+Here are some common code snippets.
+
 ### Get Current Datetime
 
 ```python
