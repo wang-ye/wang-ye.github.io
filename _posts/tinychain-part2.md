@@ -167,25 +167,19 @@ Suppose Jack already has 10 Bitcoins. Now, he wants to transfer 1 Bitcoin to Bob
 client.get_balance
 coinbase transaction: the transaction to send miner fees
 
+## How Chain is Formed
+
 
 ## Working with Orphan Branches?
-
-## Merkle Node?
-
 select_from_mempool
 
 How to avoid double spending?
 https://www.pandastrike.com/posts/20150429-understanding-bitcoin
-
-## Script
-pay-to-pubkey
-
 
 ## Docker Basics
 It uses a docker command.
 Image vs container difference. A running instance of an image is a container.
 docker inspect to return low level info
 
-
-## IBD
-Initial block download
+## Summary
+There are still several 
