@@ -14,7 +14,7 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 title: Random Bits
-email: stardust12341234@gmail.com
+email: happiercoder@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
  Random Thoughts about Everyday Tech Life 
 baseurl: "" # the subpath of your site, e.g. /blog
