@@ -1,6 +1,4 @@
-# BeautifulSoup html5lib Parser Not Working Sometimes
-
-I recently worked on some scraping work with BeautifulSoup for HTML parsing. One interesting finding is that the parser 'html5lib' sometimes is not able to parse the HTML files correctly. For example, when the *li* element goes in the same line as the *ul* element, the parsing would fail.
+I recently worked on some scraping work with BeautifulSoup for HTML parsing. One interesting finding is that the parser 'html5lib' sometimes is not able to parse the HTML files correctly. For example, when the *li* element goes in the same line as the *ul* element, the parsing would fail. The following example illustrates this.
 
 ```python
 html1 = '''
