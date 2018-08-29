@@ -1,16 +1,16 @@
 # Data Manipulation Common Operations 
 
 ## Data importing and exporting
-Supported data formats
-Pay attention to encoding. Specify encoding if possible
+* Supported data formats
+* Pay attention to encoding. Specify encoding if possible
 
 ## Analysis
-Basic row/columns of the data
-What are the data types of each columns?
-Nan values distribution
-Number of Duplicates
-Column value counts
-Pivot tables
+* Basic row/columns of the data
+* What are the data types of each columns?
+* Nan values distribution
+* Number of Duplicates
+* Column value counts
+* Pivot tables
 
 ## Data Access
 Select row/column
