@@ -13,33 +13,33 @@
 * Pivot tables
 
 ## Data Access
-Select row/column
-Slicing
-Access single element
+* Select row/column
+* Slicing
+* Access single element
 
 ## Basic Data Cleansing
-Handling Nan values
-Duplicate removal
+* Handling Nan values
+* Duplicate removal
 
 ## Modifying Data
-Rename column
-Change column type
-Remove duplicates row/column-wise
-Remove Nan row/column-wise
-Add new column/row
-Update column/row in place
-Sorting by index/columns 
+* Rename column
+* Change column type
+* Remove duplicates row/column-wise
+* Remove Nan row/column-wise
+* Add new column/row
+* Update column/row in place
+* Sorting by index/columns 
 
 ## Combining Data
-join
-concatenate column-wise
-concatenate row-wise
+* join
+* concatenate column-wise
+* concatenate row-wise
 
 ## Plotting
-Histogram
-scatter
-...
+* Histogram
+* scatter
+* ...
 
 ## Advanced topics
-Multi-indexes
-Pivot tables (group by)
+* Multi-indexes
+* Pivot tables (group by)
