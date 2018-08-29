@@ -1,5 +1,3 @@
-# Data Manipulation Common Operations 
-
 ## Data importing and exporting
 * Supported data formats
 * Pay attention to encoding. Specify encoding if possible
