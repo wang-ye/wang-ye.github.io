@@ -1,0 +1,27 @@
+I participated an Swift/iOS training. There are some mobile requests, but our team does not have mobile engineers. Also, learning iOS programming is useful for writing hobby Apps. Here I want to share some of the experiences.
+
+The training takes about 6.5 days in total.
+
+For the first two days - Swift, for the remaining 4.5 days - iOS
+
+
+Frankly speaking, Swift does not give me lots of surprise. It is a relatively easy language to learn and use. XCode also provides powerful support for writing Swift code.
+Some learnings include
+
+Builtin collections are all implemented by structs, and are passed by values, while the UI framework is in classes, and are passed by references.
+
+Optionals: Similar to Java, it also has Optional type.
+
+Closures: Swift was extensively used to handle event-driven UI programming, and closures are key for event-driven programming. It has a couple of unique syntax when using closures, but the concept is the same.
+
+Guard syntax sugar for error handling.
+
+Properties
+
+Protocols
+
+Extensions
+
+Protocol extensions
+
+
