@@ -1,4 +1,3 @@
-## Swift Learning
 I participated for our company's Swift/iOS training. Our team has several mobile requests, but none of us knows mobile development. Also, learning some iOS programming is really driving me out of the comfort zone, which I enjoyed very much.
 
 The training took about 6.5 days in total. For the first two days, we learned the language Swift, and for the remaining 4.5 days it is full of iOS app building. I split the experience into two parts. For this one, I would focus more on the Swift language, the the next part is about app building.
