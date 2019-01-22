@@ -1,4 +1,3 @@
-# OAuth Intro and Setup Doc
 When integrating third-party services, authorization/authentication is usually the first thing to set up. Nowadays, most big companies such as Google and Microsoft recommend the OAuth flow. So what is it and how can we set it up correctly? In this doc, we will first review the different authorization strategies and why oauth is chosen. Then, I will use Bing OAuth as an example to illustrate the oAuth setup.
 
 ## Authorization Options
