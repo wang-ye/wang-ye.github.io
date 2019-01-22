@@ -24,13 +24,12 @@ To summarize, On technical and work side, the goals are mostly hit, but long-ter
 ## 2019 Resolutions
 ### Personal development
 * Join the flock - I want to participate more. Not just watching outside. Github contribution is a good starting point :)
-* Expand your personal network (how?)
+* Expand your personal network - do not be a stranger.
 
 ### Habit Development
-1. Instead of having daily reflections, I plan to do a weekly reflection.
-2. Develop a healthy exercise habit. Currently already playing badminton regularly. Plan to have at least 15 hiking events during 2019.
-3. Book reading: Read at least 10 books in 2019 (any kind though). Write at least three reading summaries.
-4. Movie watching: Be an active participant. Write at least two movie reviews in 2019.
+* Instead of having daily reflections, I plan to do a weekly reflection.
+* Develop a healthy exercise habit. Currently already playing badminton regularly. Plan to have at least 15 hiking events during 2019.
+* Book reading: Read at least 10 books in 2019 (any kind though). Write at least three reading summaries. Similarly for movies, be an active participant in the community. Write at least two movie reviews in 2019.
 
 ### Career
 * The art of goal setting
