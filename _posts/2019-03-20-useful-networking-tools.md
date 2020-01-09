@@ -45,7 +45,7 @@ nc -z www.example.com 10–50
 ```
 
 ## lsof - List Open Files
-`lsof` is powerful tool to check the port usage. For example, if you want to know all the open files on TCP port 13240:
+`lsof` is another powerful tool to check the port usage. For example, if you want to know all the open files on TCP port 13240:
 
 ```shell
 22:16:41 ~ $ lsof -i TCP:13240
