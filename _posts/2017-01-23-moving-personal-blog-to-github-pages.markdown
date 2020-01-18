@@ -15,7 +15,7 @@ Github page offers many advantages compared to a vanilia github markdown blog.
 
 ### Migration In Simple Steps
 1. Create a repo "github_name,github.io" in your github account. For simplicity, let's assume your github user name is *abc*.
-2. Clone your github.io repo to local envionment. On your local macine, run 
+2. Clone your github.io repo to local envionment. On your local macine, run
 ```
 git clone git@github.com:abc/abc.github.io.git
 ```
@@ -35,7 +35,7 @@ cd abc.github.io && jekyll new .
 6. It is time for the migration - you can copy your old markdown files under the "_post" directory. Name your markdown as "YYYY-MM-DD-blog-name.md" so that Jekyll can understand and serve it.
 
 ### Adding Images and Comments
-Now we have a basic blog running, but it is not good enough - we want to embed images in our blog, also, we want to interact with readers through comments. 
+Now we have a basic blog running, but it is not good enough - we want to embed images in our blog, also, we want to interact with readers through comments.
 
 To serve your image "image.gif" in your blog, you first put it under "_assets" directory. Then in your blog, just refer it as {% raw %} "{{ site.url }}/assets/image.gif" {% endraw %}.
 
