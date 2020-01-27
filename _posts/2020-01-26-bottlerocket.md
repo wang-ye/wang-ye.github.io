@@ -1,4 +1,4 @@
-# BottleRocket
+# Bottlerocket - A Brief Intro
 In this post I want to discuss [Bottlerocket](https://github.com/linuxha/bottlerocket), a key component to integrate X10 devices with Alexa. You can find my previous post [here]({{ site.url }}/_posts/2020-01-19-x10-with-alexa.md).
 [Bottlerocket](https://github.com/linuxha/bottlerocket) is a Linux command line program to operate firecracker using serial port for signal sending. Even you do not have a serial port, you can still use a USB to serial adapter. It is written in plain C programs.
 
