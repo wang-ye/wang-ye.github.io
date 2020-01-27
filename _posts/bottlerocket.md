@@ -1,6 +1,8 @@
 # BottleRocket
+In this post I want to discuss [Bottlerocket](https://github.com/linuxha/bottlerocket), a key component to integrate X10 devices with Alexa. You can find my previous post [here]({{ site.url }}/_posts/2020-01-19-x10-with-alexa.md).
+[Bottlerocket](https://github.com/linuxha/bottlerocket) is a Linux command line program to operate firecracker using serial port for signal sending. Even you do not have a serial port, you can still use a USB to serial adapter. It is written in plain C programs.
 
-Bottlerocket is a command line program to operate firecracker using serial port for signal sending.
+# How does it work?
+Bottlerocket sends signals via the serial port to [CM17A Firecracker](https://www.x10.com/cm17a.html). Essentially, [the code](https://github.com/linuxha/bottlerocket/blob/31e3e5d6e68561d9c0db84cb5bece65c4b42b534/br_cmd.c#L250) uses `ioctl` function to set/clear the DTR and RTS pins. The firecracker module then transmits the data into radios and control the X10 devices. For each X10 command, say *turn on B10 light*, Bottlerocket first encodes the device information into a five byte array, and then sends them bit by bit to DTR and RTS pins.  [This article](https://www.xanthium.in/Controlling-RTS-and-DTR-pins-SerialPort-in-Linux) explains the serial port programming in more details in case you want to understand more.
 
-However, if you do not have serial port, you can use USB adapter. C programs.
-
+Often times calling the command just once will not work due to X10 device limitations. You can consider using the "repeat" option in Bottlerocket. Take my living room for example. If I repeat the command 3 times it will be executed as expected. However, calling it only once rarely works.
