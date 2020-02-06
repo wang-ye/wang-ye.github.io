@@ -40,3 +40,10 @@ def wrapper(*args, **kwds):
     cache[key] = result
     return result
 ```
+
+# The LRU Impl
+Threadsafe LRU cache.
+Two interesting things to note. It uses a circular linked list so you never
+need to delete any nodes in the linked list. Also, it uses a lock
+for Threadsafe control.
+The other
