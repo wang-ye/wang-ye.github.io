@@ -1,2 +1,2 @@
 # wang-ye.github.io
-blog
+Personal blog of learning and coding
